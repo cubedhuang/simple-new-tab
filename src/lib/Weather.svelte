@@ -55,41 +55,43 @@
 		deg: number;
 	}
 
-	// Caches the weather data to only make requests every 10 minutes.
-
-	const cachedWeatherData = localStorage.getItem("weatherData");
-	const cachedWeatherTime = localStorage.getItem("weatherDataTime");
-
-	let data: WeatherData;
-
-	if (
-		!cachedWeatherData ||
-		Date.now() - Number(cachedWeatherTime) > 600_000
-	) {
-		const weatherAPI = `https://api.openweathermap.org/data/2.5/weather?units=imperial&appid=${$weatherKey}`;
-
-		navigator.geolocation.getCurrentPosition(position => {
-			const lat = position.coords.latitude;
-			const long = position.coords.longitude;
-
-			fetch(`${weatherAPI}&lat=${lat}&lon=${long}`)
-				.then(res => res.json())
-				.then(response => {
-					data = response;
-
-					localStorage.setItem(
-						"weatherData",
-						JSON.stringify(response)
-					);
-					localStorage.setItem("weatherDataTime", `${Date.now()}`);
-				});
+	function getPosition() {
+		return new Promise<GeolocationPosition>((resolve, reject) => {
+			navigator.geolocation.getCurrentPosition(resolve, reject);
 		});
-	} else {
-		data = JSON.parse(cachedWeatherData);
 	}
+
+	async function fetchWeatherData(key: string): Promise<WeatherData> {
+		const cachedWeatherData = localStorage.getItem("weatherData");
+		const cachedWeatherTime = localStorage.getItem("weatherDataTime");
+
+		if (
+			cachedWeatherData &&
+			Date.now() - Number(cachedWeatherTime) < 600_000
+		) {
+			return JSON.parse(cachedWeatherData);
+		}
+
+		const weatherAPI = `https://api.openweathermap.org/data/2.5/weather?units=imperial&appid=${key}`;
+
+		const position = await getPosition();
+		const lat = position.coords.latitude;
+		const long = position.coords.longitude;
+
+		const weatherData = await fetch(
+			`${weatherAPI}&lat=${lat}&lon=${long}`
+		).then(res => res.json());
+
+		localStorage.setItem("weatherData", JSON.stringify(weatherData));
+		localStorage.setItem("weatherDataTime", `${Date.now()}`);
+
+		return weatherData;
+	}
+
+	$: data = fetchWeatherData($weatherKey);
 </script>
 
-{#if data}
+{#await data then data}
 	<div class="flow">
 		<div>
 			<h2>Weather</h2>
@@ -110,4 +112,4 @@
 			<p>wind {data.wind.speed.toFixed(2)} mph</p>
 		</div>
 	</div>
-{/if}
+{/await}
