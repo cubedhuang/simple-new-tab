@@ -1,0 +1,11 @@
+{
+	"manifest_version": 3,
+	"name": "simple new tab",
+	"version": "1.0",
+	"description": "a minimalistic new tab page",
+	"author": "cubedhuang",
+	"chrome_url_overrides": {
+		"newtab": "index.html"
+	},
+	"permissions": ["storage"]
+}

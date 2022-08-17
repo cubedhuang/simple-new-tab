@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+	body {
+		/* The default size for my chrome thing is 75% for some reason */
+		font-size: 100%;
+	}
+
+	h1,
+	h2,
+	h3 {
+		@apply text-white;
+	}
+}
+
+@layer components {
+	.unfocused {
+		@apply bg-dark;
+	}
+}
+
+@layer utilities {
+	.flow > * + * {
+		@apply mt-6;
+	}
+}
