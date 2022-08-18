@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { fade } from "svelte/transition";
+	import { cubicOut } from "svelte/easing";
+
 	import Button from "./Button.svelte";
 
 	import { clock } from "./stores";
@@ -9,8 +12,13 @@
 {#if open}
 	<div
 		class="fixed inset-0 z-10 grid place-items-center before:fixed before:inset-0 before:-z-10 before:bg-black before:bg-opacity-50"
+		on:click={() => (open = false)}
+		transition:fade={{ duration: 150, easing: cubicOut }}
 	>
-		<div class="w-full max-w-md m-4 p-4 rounded-lg bg-theme flow">
+		<div
+			class="w-full max-w-md m-4 p-4 rounded-lg bg-theme flow"
+			on:click|stopPropagation
+		>
 			<h2>settings</h2>
 
 			<div>
