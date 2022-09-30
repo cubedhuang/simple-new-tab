@@ -12,10 +12,6 @@
 	import Password from "./Password.svelte";
 	import Text from "./Text.svelte";
 
-	const [send, receive] = crossfade({
-		duration: d => Math.sqrt(d * 200)
-	});
-
 	export let open = true;
 
 	let importSettings = "";
@@ -78,10 +74,8 @@
 
 				{#each $links as { id, title, children }, sectionIndex (id)}
 					<div
+						animate:flip={{ duration: 600 }}
 						class="mt-2 flex flex-col gap-1"
-						in:receive|local={{ duration: 300, key: id }}
-						out:send|local={{ duration: 300, key: id }}
-						animate:flip={{ duration: 300 }}
 					>
 						<div class="flex items-center">
 							<h4 class="flex-1">
@@ -139,15 +133,7 @@
 							{#each children as link, linkIndex (link.id)}
 								<li
 									class="flex items-center gap-1"
-									in:receive|local={{
-										duration: 300,
-										key: link.id
-									}}
-									out:send|local={{
-										duration: 300,
-										key: link.id
-									}}
-									animate:flip={{ duration: 300 }}
+									animate:flip={{ duration: 600 }}
 								>
 									<div class="flex-1">
 										<Text
@@ -215,24 +201,24 @@
 									</div>
 								</li>
 							{/each}
-
-							<li>
-								<Button
-									on:click={() => {
-										children = [
-											...children,
-											{
-												id: generateId(),
-												name: "",
-												url: ""
-											}
-										];
-									}}
-								>
-									+ link
-								</Button>
-							</li>
 						</ul>
+
+						<p class="ml-4">
+							<Button
+								on:click={() => {
+									children = [
+										...children,
+										{
+											id: generateId(),
+											name: "",
+											url: ""
+										}
+									];
+								}}
+							>
+								+ link
+							</Button>
+						</p>
 					</div>
 				{/each}
 
@@ -321,8 +307,6 @@
 						if (!importSettings) return;
 
 						const data = JSON.parse(atob(importSettings));
-
-						console.log(data);
 
 						$clock = data.clock;
 						$links = data.links;

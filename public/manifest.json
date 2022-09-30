@@ -1,11 +1,19 @@
 {
 	"manifest_version": 3,
-	"name": "simple new tab",
-	"version": "1.0",
-	"description": "a minimalistic new tab page",
+	"name": "Simple New Tab",
+	"version": "1.2",
+	"description": "A minimalistic, configurable new tab page.",
+	"icons": {
+		"16": "icon16.png",
+		"32": "icon32.png",
+		"48": "icon48.png",
+		"64": "icon64.png",
+		"128": "icon128.png",
+		"256": "icon256.png",
+		"512": "icon512.png"
+	},
 	"author": "cubedhuang",
 	"chrome_url_overrides": {
 		"newtab": "index.html"
-	},
-	"permissions": ["storage"]
+	}
 }
