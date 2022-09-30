@@ -3,10 +3,13 @@
 
 	import { discordId } from "./stores";
 
-	$: lanyard = useLanyard({
-		method: "rest",
-		id: $discordId
-	});
+	$: lanyard = $discordId
+		? useLanyard({
+				method: "rest",
+				id: $discordId,
+				pollInterval: 10000
+		  })
+		: null;
 </script>
 
 {#if $lanyard}

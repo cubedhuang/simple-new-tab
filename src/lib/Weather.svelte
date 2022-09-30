@@ -61,7 +61,11 @@
 		});
 	}
 
-	async function fetchWeatherData(key: string): Promise<WeatherData> {
+	async function fetchWeatherData(key: string): Promise<WeatherData | null> {
+		if (!key) {
+			return null;
+		}
+
 		const cachedWeatherData = localStorage.getItem("weatherData");
 		const cachedWeatherTime = localStorage.getItem("weatherDataTime");
 
@@ -78,12 +82,14 @@
 		const lat = position.coords.latitude;
 		const long = position.coords.longitude;
 
-		const weatherData = await fetch(
-			`${weatherAPI}&lat=${lat}&lon=${long}`
-		).then(res => res.json());
+		const weatherData = await fetch(`${weatherAPI}&lat=${lat}&lon=${long}`)
+			.then(res => (res.ok ? res.json() : null))
+			.catch(() => null);
 
-		localStorage.setItem("weatherData", JSON.stringify(weatherData));
-		localStorage.setItem("weatherDataTime", `${Date.now()}`);
+		if (weatherData) {
+			localStorage.setItem("weatherData", JSON.stringify(weatherData));
+			localStorage.setItem("weatherDataTime", `${Date.now()}`);
+		}
 
 		return weatherData;
 	}
@@ -92,24 +98,26 @@
 </script>
 
 {#await data then data}
-	<div class="flow">
-		<div>
-			<h2>Weather</h2>
-			<p>in {data.name}</p>
-			<p>{data.weather[0].description}</p>
+	{#if data}
+		<div class="flow">
+			<div>
+				<h2>Weather</h2>
+				<p>in {data.name}</p>
+				<p>{data.weather[0].description}</p>
+			</div>
+			<div>
+				<h2>Temperature</h2>
+				<p>temp {data.main.temp.toFixed(2)}°F</p>
+				<p>min {data.main.temp_min.toFixed(2)}°F</p>
+				<p>max {data.main.temp_max.toFixed(2)}°F</p>
+				<p>feels like {data.main.feels_like.toFixed(2)}°F</p>
+			</div>
+			<div>
+				<h2>Condition</h2>
+				<p>humidity {data.main.humidity}%</p>
+				<p>clouds {data.clouds.all}%</p>
+				<p>wind {data.wind.speed.toFixed(2)} mph</p>
+			</div>
 		</div>
-		<div>
-			<h2>Temperature</h2>
-			<p>temp {data.main.temp.toFixed(2)}°F</p>
-			<p>min {data.main.temp_min.toFixed(2)}°F</p>
-			<p>max {data.main.temp_max.toFixed(2)}°F</p>
-			<p>feels like {data.main.feels_like.toFixed(2)}°F</p>
-		</div>
-		<div>
-			<h2>Condition</h2>
-			<p>humidity {data.main.humidity}%</p>
-			<p>clouds {data.clouds.all}%</p>
-			<p>wind {data.wind.speed.toFixed(2)} mph</p>
-		</div>
-	</div>
+	{/if}
 {/await}

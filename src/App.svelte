@@ -4,7 +4,7 @@
 	import Links from "./lib/Links.svelte";
 	import Quote from "./lib/Quote.svelte";
 	import Settings from "./lib/Settings.svelte";
-	import SettingsIcon from "./lib/SettingsIcon.svelte";
+	import SettingsIcon from "./lib/icons/SettingsIcon.svelte";
 	import Weather from "./lib/Weather.svelte";
 
 	let unfocused = false;

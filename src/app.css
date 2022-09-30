@@ -6,12 +6,19 @@
 	body {
 		/* The default size for my chrome thing is 75% for some reason */
 		font-size: 100%;
+
+		scrollbar-width: none;
 	}
 
 	h1,
 	h2,
 	h3 {
 		@apply text-white;
+	}
+
+	::-webkit-scrollbar {
+		appearance: none;
+		width: 0;
 	}
 }
 

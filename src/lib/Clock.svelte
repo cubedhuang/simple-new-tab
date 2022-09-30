@@ -3,11 +3,11 @@
 
 	import { clock } from "./stores";
 
-	const df = new Intl.DateTimeFormat("en", {
-		month: "long",
+	$: df = new Intl.DateTimeFormat("en", {
+		month: $clock.longMonth ? "long" : "numeric",
 		day: "numeric",
 		year: "numeric",
-		weekday: "long"
+		weekday: $clock.showDay ? "long" : undefined
 	});
 	$: tf = new Intl.DateTimeFormat("en", {
 		hour: "numeric",

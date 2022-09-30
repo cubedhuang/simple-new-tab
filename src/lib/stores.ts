@@ -1,86 +1,91 @@
 import { writable } from "svelte/store";
 
+function writableStored<T>(key: string, initialValue: T) {
+	const value = localStorage.getItem(key);
+	const store = writable<T>(value ? JSON.parse(value) : initialValue);
+
+	store.subscribe(value => {
+		localStorage.setItem(key, JSON.stringify(value));
+	});
+
+	return store;
+}
+
 interface ClockSettings {
+	longMonth: boolean;
+	showDay: boolean;
 	hour12: boolean;
 	showTimezone: boolean;
 }
 
-export const clock = writable<ClockSettings>({
+export const clock = writableStored<ClockSettings>("clock", {
+	longMonth: true,
+	showDay: true,
 	hour12: true,
 	showTimezone: false
 });
 
 interface Link {
+	id: string;
 	name: string;
 	url: string;
 }
 
 interface LinkSection {
+	id: string;
 	title: string;
-	links: Link[];
+	children: Link[];
 }
 
-export const links = writable<LinkSection[]>([
+export function generateId() {
+	return Math.random().toString(36).substring(2, 10);
+}
+
+export const links = writableStored<LinkSection[]>("links", [
 	{
-		title: "school",
-		links: [
+		id: generateId(),
+		title: "simple",
+		children: [
 			{
-				name: "ctls",
-				url: "https://studentportal.educationincites.com/#/Home"
+				id: generateId(),
+				name: "google",
+				url: "https://google.com"
 			},
 			{
-				name: "canvas",
-				url: "https://canvas.instructure.com"
-			},
-			{
-				name: "mastering",
-				url: "https://portal.mypearson.com/course-home#/tab/active"
-			},
-			{
-				name: "turnitin",
-				url: "https://www.turnitin.com/s_home.asp"
-			},
-			{
-				name: "vocab",
-				url: "https://sadlierconnect.com/@1398082"
-			},
-			{
-				name: "gavs",
-				url: "https://gavirtual.instructure.com"
-			},
-			{
-				name: "gt",
-				url: "https://gatech.instructure.com"
-			},
-			{
-				name: "studentvue",
-				url: "https://studentvue.cobbk12.org"
-			}
-		]
-	},
-	{
-		title: "stuff",
-		links: [
-			{
-				name: "github",
-				url: "https://github.com"
-			},
-			{
+				id: generateId(),
 				name: "docs",
 				url: "https://docs.google.com"
 			},
 			{
+				id: generateId(),
+				name: "gmail",
+				url: "https://gmail.com"
+			},
+			{
+				id: generateId(),
+				name: "github",
+				url: "https://github.com"
+			}
+		]
+	},
+	{
+		id: generateId(),
+		title: "links",
+		children: [
+			{
+				id: generateId(),
 				name: "youtube",
 				url: "https://youtube.com"
 			},
 			{
-				name: "gmail",
-				url: "https://gmail.com"
+				id: generateId(),
+				name: "twitter",
+				url: "https://twitter.com"
 			}
 		]
 	}
 ]);
 
-export const discordId = writable("299707523370319883");
+export const discordId = writableStored("discordId", "");
 
-export const weatherKey = writable("bc45eff71fbee692074aa888296c0490");
+export const weatherKey = writableStored("weatherKey", "");
