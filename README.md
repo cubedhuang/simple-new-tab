@@ -9,6 +9,8 @@ A minimalistic, configurable new tab page. Works with Chromium-based browsers an
 -   Minimalistic design.
 -   Easy to configure.
     ![Screenshot](https://cdn.dan.onl/22/09/04580--2022-09-30--01-29-59.png)
+-   A new quote every time you open a new tab.
+-   Clock with the current local time.
 -   Weather information in your area, powered by [OpenWeather](https://openweathermap.org/).
 -   Your Discord status at a glance.
 -   Import and export your settings.
