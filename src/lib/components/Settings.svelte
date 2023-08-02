@@ -1,31 +1,38 @@
 <script lang="ts">
-	import { flip } from "svelte/animate";
-	import { crossfade, fade } from "svelte/transition";
-	import { cubicOut, quintOut } from "svelte/easing";
+	import { flip } from 'svelte/animate';
+	import { fade } from 'svelte/transition';
 
-	import { clock, discordId, generateId, links, weatherKey } from "./stores";
+	import { clock, discordId, generateId, links, weatherKey } from '../stores';
 
-	import ArrowDown from "./icons/ArrowDown.svelte";
-	import ArrowUp from "./icons/ArrowUp.svelte";
-	import Button from "./Button.svelte";
-	import DeleteIcon from "./icons/DeleteIcon.svelte";
-	import Password from "./Password.svelte";
-	import Text from "./Text.svelte";
+	import ArrowDown from './icons/ArrowDown.svelte';
+	import ArrowUp from './icons/ArrowUp.svelte';
+	import Button from './Button.svelte';
+	import DeleteIcon from './icons/DeleteIcon.svelte';
+	import Password from './Password.svelte';
+	import Text from './Text.svelte';
 
 	export let open = true;
 
-	let importSettings = "";
+	let resetSettingsConfirmation = false;
+
+	$: if (!open) {
+		resetSettingsConfirmation = false;
+	}
+
+	let importSettings = '';
 </script>
 
 {#if open}
 	<div
 		class="fixed inset-0 z-10 grid place-items-center px-8 py-8 max-h-screen overflow-auto before:fixed before:inset-0 before:-z-10 before:bg-black before:bg-opacity-50"
-		on:click={() => (open = false)}
-		transition:fade={{ duration: 150, easing: cubicOut }}
+		on:click|self={() => (open = false)}
+		on:keydown={() => {}}
+		aria-hidden="true"
+		transition:fade={{ duration: 150 }}
 	>
 		<div
-			class="w-full max-w-screen-lg p-4 rounded-lg bg-theme flow"
-			on:click|stopPropagation
+			class="w-full max-w-screen-lg p-8 rounded-lg bg-background flow"
+			role="dialog"
 		>
 			<h2>settings</h2>
 
@@ -38,7 +45,7 @@
 							$clock.longMonth = !$clock.longMonth;
 						}}
 					>
-						Month {$clock.longMonth ? "Name" : "Number"}
+						Month {$clock.longMonth ? 'Name' : 'Number'}
 					</Button>
 
 					<Button
@@ -46,7 +53,15 @@
 							$clock.showDay = !$clock.showDay;
 						}}
 					>
-						Day of Week {$clock.showDay ? "Shown" : "Hidden"}
+						Day of Week {$clock.showDay ? 'Shown' : 'Hidden'}
+					</Button>
+
+					<Button
+						on:click={() => {
+							$clock.dayFirst = !$clock.dayFirst;
+						}}
+					>
+						{$clock.dayFirst ? 'Day' : 'Month'} First
 					</Button>
 				</p>
 
@@ -64,7 +79,7 @@
 							$clock.showTimezone = !$clock.showTimezone;
 						}}
 					>
-						Timezone {$clock.showTimezone ? "Shown" : "Hidden"}
+						Timezone {$clock.showTimezone ? 'Shown' : 'Hidden'}
 					</Button>
 				</p>
 			</div>
@@ -74,7 +89,7 @@
 
 				{#each $links as { id, title, children }, sectionIndex (id)}
 					<div
-						animate:flip={{ duration: 600 }}
+						animate:flip={{ duration: 300 }}
 						class="mt-2 flex flex-col gap-1"
 					>
 						<div class="flex items-center">
@@ -133,7 +148,7 @@
 							{#each children as link, linkIndex (link.id)}
 								<li
 									class="flex items-center gap-1"
-									animate:flip={{ duration: 600 }}
+									animate:flip={{ duration: 300 }}
 								>
 									<div class="flex-1">
 										<Text
@@ -210,8 +225,8 @@
 										...children,
 										{
 											id: generateId(),
-											name: "",
-											url: ""
+											name: '',
+											url: ''
 										}
 									];
 								}}
@@ -229,7 +244,7 @@
 								...$links,
 								{
 									id: generateId(),
-									title: "",
+									title: '',
 									children: []
 								}
 							];
@@ -285,22 +300,63 @@
 				</p>
 			</div>
 
-			<p>Changes are automatically saved.</p>
+			<div>
+				<h3>danger</h3>
+
+				<p class="mt-2">
+					<Button
+						on:click={() => {
+							resetSettingsConfirmation = true;
+						}}
+					>
+						reset all settings
+					</Button>
+				</p>
+			</div>
+
+			{#if resetSettingsConfirmation}
+				<div>
+					<p>Are you sure you want to reset all settings?</p>
+
+					<p class="mt-2">
+						<Button
+							on:click={() => {
+								localStorage.clear();
+								location.reload();
+							}}
+						>
+							yes
+						</Button>
+
+						<Button
+							on:click={() => {
+								resetSettingsConfirmation = false;
+							}}
+						>
+							no
+						</Button>
+					</p>
+				</div>
+			{/if}
 
 			<div>
-				<Button
-					on:click={() => {
-						const data = {
-							clock: $clock,
-							links: $links,
-							weatherKey: $weatherKey,
-							discordId: $discordId
-						};
-						navigator.clipboard.writeText(
-							btoa(JSON.stringify(data))
-						);
-					}}>export to clipboard</Button
-				>
+				<h3>save and load data</h3>
+
+				<p class="mt-2">
+					<Button
+						on:click={() => {
+							const data = {
+								clock: $clock,
+								links: $links,
+								weatherKey: $weatherKey,
+								discordId: $discordId
+							};
+							navigator.clipboard.writeText(
+								btoa(JSON.stringify(data))
+							);
+						}}>export to clipboard</Button
+					>
+				</p>
 
 				<form
 					on:submit|preventDefault={() => {
@@ -320,7 +376,9 @@
 				</form>
 			</div>
 
-			<Button on:click={() => (open = false)}>close</Button>
+			<p>Changes are automatically saved.</p>
+
+			<Button on:click={() => (open = false)}>done</Button>
 		</div>
 	</div>
 {/if}

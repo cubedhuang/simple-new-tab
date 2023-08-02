@@ -19,12 +19,12 @@ A minimalistic, configurable new tab page. Works with Chromium-based browsers an
 ## Build
 
 1.  Clone the repository.
-2.  Run `yarn` to install dependencies.
-3.  Run `yarn build` to build the extension.
+2.  Run `pnpm i` to install dependencies.
+3.  Run `pnpm build` to build the extension.
 4.  Load the extension from `/dist` as an unpacked extension into your browser.
 
 ## Develop
 
 1.  Clone the repository.
-2.  Run `yarn` to install dependencies.
-3.  Run `yarn dev` to start a local development server.
+2.  Run `pnpm i` to install dependencies.
+3.  Run `pnpm dev` to start a local development server.

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { links } from "./stores";
+	import { links } from '../stores';
 </script>
 
 <div class="flow">

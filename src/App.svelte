@@ -1,19 +1,19 @@
 <script lang="ts">
-	import Clock from "./lib/Clock.svelte";
-	import Discord from "./lib/Discord.svelte";
-	import Links from "./lib/Links.svelte";
-	import Quote from "./lib/Quote.svelte";
-	import Settings from "./lib/Settings.svelte";
-	import SettingsIcon from "./lib/icons/SettingsIcon.svelte";
-	import Weather from "./lib/Weather.svelte";
+	import Clock from './lib/components/Clock.svelte';
+	import Discord from './lib/components/Discord.svelte';
+	import Links from './lib/components/Links.svelte';
+	import Quote from './lib/components/Quote.svelte';
+	import Settings from './lib/components/Settings.svelte';
+	import SettingsIcon from './lib/components/icons/SettingsIcon.svelte';
+	import Weather from './lib/components/Weather.svelte';
 
 	let unfocused = false;
 
-	addEventListener("blur", () => {
+	addEventListener('blur', () => {
 		unfocused = true;
 	});
 
-	addEventListener("focus", () => {
+	addEventListener('focus', () => {
 		unfocused = false;
 	});
 
@@ -21,10 +21,10 @@
 </script>
 
 <main
-	class="min-h-screen p-16 flex gap-8 font-main text-light transition-colors duration-300"
+	class="min-h-screen p-16 grid grid-cols-2 gap-8 font-main text-light transition-colors"
 	class:unfocused
 >
-	<div class="flex-1 flow">
+	<div class="flow">
 		<h1>new tab</h1>
 
 		<Quote />

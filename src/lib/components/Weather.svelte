@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { weatherKey } from "./stores";
+	import { weatherKey } from '../stores';
 
 	interface WeatherData {
 		coord: Coord;
@@ -66,8 +66,8 @@
 			return null;
 		}
 
-		const cachedWeatherData = localStorage.getItem("weatherData");
-		const cachedWeatherTime = localStorage.getItem("weatherDataTime");
+		const cachedWeatherData = localStorage.getItem('weatherData');
+		const cachedWeatherTime = localStorage.getItem('weatherDataTime');
 
 		if (
 			cachedWeatherData &&
@@ -87,8 +87,8 @@
 			.catch(() => null);
 
 		if (weatherData) {
-			localStorage.setItem("weatherData", JSON.stringify(weatherData));
-			localStorage.setItem("weatherDataTime", `${Date.now()}`);
+			localStorage.setItem('weatherData', JSON.stringify(weatherData));
+			localStorage.setItem('weatherDataTime', `${Date.now()}`);
 		}
 
 		return weatherData;
