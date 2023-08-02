@@ -1,15 +1,19 @@
 <script lang="ts">
-	import { flip } from 'svelte/animate';
 	import { fade } from 'svelte/transition';
 
-	import { clock, discordId, generateId, links, weatherKey } from '../stores';
+	import {
+		clock,
+		colors,
+		discordId,
+		links,
+		resetColors,
+		weatherKey
+	} from '../stores';
 
-	import ArrowDown from './icons/ArrowDown.svelte';
-	import ArrowUp from './icons/ArrowUp.svelte';
 	import Button from './Button.svelte';
-	import DeleteIcon from './icons/DeleteIcon.svelte';
 	import Password from './Password.svelte';
 	import Text from './Text.svelte';
+	import SettingsLinks from './SettingsLinks.svelte';
 
 	export let open = true;
 
@@ -31,10 +35,39 @@
 		transition:fade={{ duration: 150 }}
 	>
 		<div
-			class="w-full max-w-screen-lg p-8 rounded-lg bg-background flow"
+			class="w-full max-w-screen-lg p-8 rounded-xl bg-background flow"
 			role="dialog"
 		>
 			<h2>settings</h2>
+
+			<div>
+				<h3>colors</h3>
+
+				<div class="mt-2 flex flex-wrap gap-2">
+					{#each Object.keys($colors) as name}
+						<label
+							class="flex items-center bg-black/30 cursor-pointer rounded-lg hover:text-accent transition-colors focus-within:text-accent"
+						>
+							<span
+								class="h-full w-4 rounded-l-lg border-2 border-gray-600/30"
+								style:background={$colors[name]}
+							></span>
+
+							<span class="px-2 py-1">
+								{name}
+							</span>
+
+							<input
+								type="color"
+								class="sr-only self-end"
+								bind:value={$colors[name]}
+							/>
+						</label>
+					{/each}
+
+					<Button on:click={resetColors}>reset colors</Button>
+				</div>
+			</div>
 
 			<div>
 				<h3>clock</h3>
@@ -84,176 +117,7 @@
 				</p>
 			</div>
 
-			<div>
-				<h3>links</h3>
-
-				{#each $links as { id, title, children }, sectionIndex (id)}
-					<div
-						animate:flip={{ duration: 300 }}
-						class="mt-2 flex flex-col gap-1"
-					>
-						<div class="flex items-center">
-							<h4 class="flex-1">
-								<Text placeholder="title" bind:value={title} />
-							</h4>
-
-							<div class="flex gap-1">
-								<button
-									class="hover:text-white transition"
-									title="move up"
-									on:click={() => {
-										if (sectionIndex <= 0) return;
-										[
-											$links[sectionIndex],
-											$links[sectionIndex - 1]
-										] = [
-											$links[sectionIndex - 1],
-											$links[sectionIndex]
-										];
-									}}
-								>
-									<ArrowUp />
-								</button>
-								<button
-									class="hover:text-white transition"
-									title="move up"
-									on:click={() => {
-										if (sectionIndex >= $links.length - 1)
-											return;
-										[
-											$links[sectionIndex],
-											$links[sectionIndex + 1]
-										] = [
-											$links[sectionIndex + 1],
-											$links[sectionIndex]
-										];
-									}}
-								>
-									<ArrowDown />
-								</button>
-								<button
-									class="hover:text-red-400 transition"
-									title="delete"
-									on:click={() => {
-										$links.splice(sectionIndex, 1);
-										$links = $links;
-									}}
-								>
-									<DeleteIcon />
-								</button>
-							</div>
-						</div>
-
-						<ul class="pl-4 flex flex-col gap-1">
-							{#each children as link, linkIndex (link.id)}
-								<li
-									class="flex items-center gap-1"
-									animate:flip={{ duration: 300 }}
-								>
-									<div class="flex-1">
-										<Text
-											placeholder="name"
-											bind:value={link.name}
-										/>
-									</div>
-
-									<div class="flex-[3]">
-										<Text
-											placeholder="url"
-											bind:value={link.url}
-										/>
-									</div>
-
-									<div class="flex gap-1">
-										<button
-											class="hover:text-white transition"
-											title="move up"
-											on:click={() => {
-												if (linkIndex <= 0) return;
-												[
-													children[linkIndex],
-													children[linkIndex - 1]
-												] = [
-													children[linkIndex - 1],
-													children[linkIndex]
-												];
-											}}
-										>
-											<ArrowUp />
-										</button>
-										<button
-											class="hover:text-white transition"
-											title="move up"
-											on:click={() => {
-												if (
-													linkIndex >=
-													children.length - 1
-												) {
-													return;
-												}
-
-												[
-													children[linkIndex],
-													children[linkIndex + 1]
-												] = [
-													children[linkIndex + 1],
-													children[linkIndex]
-												];
-											}}
-										>
-											<ArrowDown />
-										</button>
-										<button
-											class="hover:text-red-400 transition"
-											title="delete"
-											on:click={() => {
-												children.splice(linkIndex, 1);
-												children = children;
-											}}
-										>
-											<DeleteIcon />
-										</button>
-									</div>
-								</li>
-							{/each}
-						</ul>
-
-						<p class="ml-4">
-							<Button
-								on:click={() => {
-									children = [
-										...children,
-										{
-											id: generateId(),
-											name: '',
-											url: ''
-										}
-									];
-								}}
-							>
-								+ link
-							</Button>
-						</p>
-					</div>
-				{/each}
-
-				<p class="mt-2">
-					<Button
-						on:click={() => {
-							$links = [
-								...$links,
-								{
-									id: generateId(),
-									title: '',
-									children: []
-								}
-							];
-						}}
-					>
-						+ section
-					</Button>
-				</p>
-			</div>
+			<SettingsLinks />
 
 			<div>
 				<h3>weather</h3>
@@ -263,7 +127,7 @@
 					feature, get an API key from the
 					<a
 						href="https://openweathermap.org/"
-						class="underline underline-offset-2 hover:text-white transition-colors"
+						class="underline underline-offset-2 hover:text-accent transition-colors"
 					>
 						OpenWeather website</a
 					>. This page only makes a request every 10 minutes, so you
@@ -286,7 +150,7 @@
 					Lanyard Discord server. Learn more at the
 					<a
 						href="https://github.com/phineas/Lanyard"
-						class="underline underline-offset-2 hover:text-white transition-colors"
+						class="underline underline-offset-2 hover:text-accent transition-colors"
 					>
 						Github page</a
 					>.
@@ -346,6 +210,7 @@
 					<Button
 						on:click={() => {
 							const data = {
+								colors: $colors,
 								clock: $clock,
 								links: $links,
 								weatherKey: $weatherKey,
@@ -364,6 +229,7 @@
 
 						const data = JSON.parse(atob(importSettings));
 
+						$colors = data.colors;
 						$clock = data.clock;
 						$links = data.links;
 						$weatherKey = data.weatherKey;

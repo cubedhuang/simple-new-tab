@@ -13,15 +13,26 @@ function writableStored<T>(key: string, initialValue: T) {
 	return store;
 }
 
-interface Colors {
-	background: string;
-	unfocused: string;
-}
-
-export const colors = writableStored<Colors>('colors', {
+const initialColors = {
 	background: '#19101d',
-	unfocused: '#1e1e1e'
+	unfocused: '#1e1e1e',
+	accent: '#ffffff',
+	body: '#a5acb6'
+};
+
+export const colors = writableStored<Record<string, string>>('colors', {
+	...initialColors
 });
+
+colors.subscribe($colors => {
+	for (const [key, value] of Object.entries($colors)) {
+		document.documentElement.style.setProperty(`--${key}`, value);
+	}
+});
+
+export function resetColors() {
+	colors.set({ ...initialColors });
+}
 
 interface ClockSettings {
 	longMonth: boolean;

@@ -15,10 +15,14 @@
 
 		<!-- the script in head before content loads prevents the initial flash of white -->
 		<script>
-			const savedColors = JSON.parse(localStorage.getItem('simple-new-tab:colors'));
+			const rawSavedColors = localStorage.getItem('colors');
 
-			for (const [key, value] of Object.entries(savedColors)) {
-				document.documentElement.style.setProperty(`--${key}`, value)
+			if (rawSavedColors) {
+				const savedColors = JSON.parse(rawSavedColors);
+
+				for (const [key, value] of Object.entries(savedColors)) {
+					document.documentElement.style.setProperty(`--${key}`, value)
+				}
 			}
 		</script>
 	</head>

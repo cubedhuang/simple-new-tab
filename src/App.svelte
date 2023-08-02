@@ -21,7 +21,7 @@
 </script>
 
 <main
-	class="min-h-screen p-16 grid grid-cols-2 gap-8 font-main text-light transition-colors"
+	class="min-h-screen p-16 grid grid-cols-2 gap-8 font-main text-body transition-colors duration-300"
 	class:unfocused
 >
 	<div class="flow">
@@ -31,7 +31,7 @@
 		<Links />
 
 		<button
-			class="hover:text-white hover:rotate-[22.5deg] transition"
+			class="hover:text-accent hover:rotate-[22.5deg] transition"
 			title="open settings"
 			on:click={() => (settingsOpen = true)}
 		>

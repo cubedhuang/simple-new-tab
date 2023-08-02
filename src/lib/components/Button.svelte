@@ -4,7 +4,7 @@
 
 <button
 	{type}
-	class="px-2 py-1 bg-black/30 hover:text-white focus:text-white focus:outline-none transition-colors rounded"
+	class="px-2 py-1 bg-black/30 hover:text-accent focus:text-accent focus:outline-none transition-colors rounded-lg"
 	on:click
 >
 	<slot />

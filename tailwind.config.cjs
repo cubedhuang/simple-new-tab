@@ -11,7 +11,8 @@ module.exports = {
 			colors: {
 				background: 'var(--background)',
 				unfocused: 'var(--unfocused)',
-				light: '#a5acb6'
+				accent: 'var(--accent)',
+				body: 'var(--body)'
 			}
 		}
 	},

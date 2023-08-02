@@ -10,7 +10,7 @@
 			</li>
 			{#each children as { name, url }}
 				<li class="before:content-['-_']">
-					<a class="hover:text-white transition-colors" href={url}>
+					<a class="hover:text-accent transition-colors" href={url}>
 						{name}
 					</a>
 				</li>
