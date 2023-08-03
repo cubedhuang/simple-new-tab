@@ -8,4 +8,5 @@
 	type="text"
 	{placeholder}
 	bind:value
+	on:input
 />

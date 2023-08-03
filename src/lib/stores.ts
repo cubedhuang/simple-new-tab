@@ -34,6 +34,31 @@ export function resetColors() {
 	colors.set({ ...initialColors });
 }
 
+export const presetFonts = [
+	'Fira Code',
+	'Inconsolata',
+	'Inter',
+	'JetBrains Mono',
+	'OpenDyslexic',
+	'OpenDyslexicMono',
+	'Lexend Deca',
+	'Roboto',
+	'Roboto Mono',
+	'Ubuntu',
+	'Ubuntu Mono'
+];
+
+export const font = writableStored('font', 'Roboto Mono');
+export const fontSize = writableStored('font-size', 100);
+
+font.subscribe($font => {
+	document.documentElement.style.setProperty('--font', $font);
+});
+
+fontSize.subscribe($fontSize => {
+	document.documentElement.style.setProperty('--font-size', `${$fontSize}%`);
+});
+
 interface ClockSettings {
 	longMonth: boolean;
 	showDay: boolean;

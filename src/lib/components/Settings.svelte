@@ -5,7 +5,10 @@
 		clock,
 		colors,
 		discordId,
+		font,
+		fontSize,
 		links,
+		presetFonts,
 		resetColors,
 		weatherKey
 	} from '../stores';
@@ -14,8 +17,11 @@
 	import Password from './Password.svelte';
 	import Text from './Text.svelte';
 	import SettingsLinks from './SettingsLinks.svelte';
+	import Number from './Number.svelte';
 
 	export let open = true;
+
+	let customFont = presetFonts.includes($font) ? '' : $font;
 
 	let resetSettingsConfirmation = false;
 
@@ -39,6 +45,63 @@
 			role="dialog"
 		>
 			<h2>settings</h2>
+
+			<div>
+				<h3>font</h3>
+
+				<div class="mt-2 flex items-center">
+					<p class="shrink-0">font size</p>
+
+					<div class="ml-2 w-fit">
+						<Number
+							bind:value={$fontSize}
+							step={5}
+							min={50}
+							max={200}
+						/>
+					</div>
+
+					<p>%</p>
+				</div>
+
+				<div class="mt-4 flex flex-wrap gap-1">
+					{#each presetFonts as name}
+						<div class="contents" style:font-family={name}>
+							<Button
+								on:click={() => {
+									$font = name;
+								}}
+								class={name === $font
+									? 'bg-accent text-background hover:bg-accent hover:text-background focus:bg-accent focus:text-background'
+									: ''}
+							>
+								{name}
+							</Button>
+						</div>
+					{/each}
+				</div>
+
+				<p class="mt-4">
+					<Text
+						placeholder="custom font name..."
+						bind:value={customFont}
+						on:input={() => {
+							if (customFont === '') {
+								$font = 'Roboto Mono';
+							} else {
+								$font = customFont;
+							}
+						}}
+					/>
+				</p>
+
+				{#if customFont}
+					<p class="mt-1">
+						Make sure you have the custom font installed on your
+						computer.
+					</p>
+				{/if}
+			</div>
 
 			<div>
 				<h3>colors</h3>
@@ -216,6 +279,7 @@
 								weatherKey: $weatherKey,
 								discordId: $discordId
 							};
+
 							navigator.clipboard.writeText(
 								btoa(JSON.stringify(data))
 							);
@@ -229,11 +293,11 @@
 
 						const data = JSON.parse(atob(importSettings));
 
-						$colors = data.colors;
-						$clock = data.clock;
-						$links = data.links;
-						$weatherKey = data.weatherKey;
-						$discordId = data.discordId;
+						if (data.colors) $colors = data.colors;
+						if (data.clock) $clock = data.clock;
+						if (data.links) $links = data.links;
+						if (data.weatherKey) $weatherKey = data.weatherKey;
+						if (data.discordId) $discordId = data.discordId;
 					}}
 					class="flex gap-1 mt-1"
 				>

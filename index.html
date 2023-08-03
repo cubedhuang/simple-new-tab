@@ -8,21 +8,50 @@
 
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital@0;1&display=swap"
+		<link
+			href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Inconsolata&family=Inter&family=JetBrains+Mono&family=Lexend+Deca&family=Roboto&family=Roboto+Mono&family=Ubuntu&family=Ubuntu+Mono&display=swap"
 			rel="stylesheet">
 
 		<link rel="shortcut icon" href="favicon.ico">
 
 		<!-- the script in head before content loads prevents the initial flash of white -->
 		<script>
-			const rawSavedColors = localStorage.getItem('colors');
+			try {
+				const rawSavedColors = localStorage.getItem('colors');
 
-			if (rawSavedColors) {
-				const savedColors = JSON.parse(rawSavedColors);
+				if (rawSavedColors) {
+					const savedColors = JSON.parse(rawSavedColors);
 
-				for (const [key, value] of Object.entries(savedColors)) {
-					document.documentElement.style.setProperty(`--${key}`, value)
+					for (const [key, value] of Object.entries(savedColors)) {
+						document.documentElement.style.setProperty(`--${key}`, value)
+					}
 				}
+			} catch {
+				localStorage.removeItem('colors');
+			}
+
+			try {
+				const rawSavedFont = localStorage.getItem('font');
+
+				if (rawSavedFont) {
+					const savedFont = JSON.parse(rawSavedFont);
+
+					document.documentElement.style.setProperty(`--font`, savedFont)
+				}
+			} catch {
+				localStorage.removeItem('font');
+			}
+
+			try {
+				const rawSavedFontSize = localStorage.getItem('fontSize');
+
+				if (rawSavedFontSize) {
+					const savedFontSize = JSON.parse(rawSavedFontSize);
+
+					document.documentElement.style.setProperty(`--fontSize`, savedFontSize)
+				}
+			} catch {
+				localStorage.removeItem('fontSize');
 			}
 		</script>
 	</head>

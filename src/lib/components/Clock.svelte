@@ -11,7 +11,7 @@
 		year: 'numeric',
 		weekday: $clock.showDay ? 'long' : undefined
 	});
-	$: tf = new Intl.DateTimeFormat(locale, {
+	$: tf = new Intl.DateTimeFormat('en', {
 		hour: 'numeric',
 		hour12: $clock.hour12,
 		minute: 'numeric',

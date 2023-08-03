@@ -6,7 +6,7 @@ module.exports = {
 	theme: {
 		extend: {
 			fontFamily: {
-				main: ["'Roboto Mono'", ...defaultTheme.fontFamily.mono]
+				main: ['var(--font)', ...defaultTheme.fontFamily.mono]
 			},
 			colors: {
 				background: 'var(--background)',
