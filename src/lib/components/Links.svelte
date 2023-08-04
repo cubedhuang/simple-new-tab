@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { links } from '../stores';
+	import { links, tweaks } from '../stores';
 </script>
 
 <div class="flow">
@@ -9,7 +9,11 @@
 				<h2>{title}</h2>
 			</li>
 			{#each children as { name, url }}
-				<li class="before:content-['-_']">
+				<li
+					class={$tweaks.bulletPoints
+						? 'ml-6 list-disc'
+						: "before:content-['-_']"}
+				>
 					<a class="hover:text-accent transition-colors" href={url}>
 						{name}
 					</a>
