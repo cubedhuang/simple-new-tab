@@ -1,6 +1,9 @@
 # Simple New Tab
 
-A minimalistic, configurable new tab page. Works with Chromium-based browsers and Firefox. Get it [here](https://chrome.google.com/webstore/detail/simple-new-tab/knjgndjhindbbphlfnaagilhcjciehaf)!
+A minimalistic, configurable new tab page. Works with Chromium-based browsers and Firefox.
+
+-   [Chrome Extension](https://chrome.google.com/webstore/detail/simple-new-tab/knjgndjhindbbphlfnaagilhcjciehaf)
+-   [Firefox Add-on](https://addons.mozilla.org/en-US/firefox/addon/minimalistic-new-tab/)
 
 ![Screenshot](https://cdn.dan.onl/22/09/04579--2022-09-30--01-26-33.png)
 
