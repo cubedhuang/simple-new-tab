@@ -9,7 +9,7 @@
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link
-			href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Inconsolata&family=Inter&family=JetBrains+Mono&family=Lexend+Deca&family=Roboto&family=Roboto+Mono&family=Ubuntu&family=Ubuntu+Mono&display=swap"
+			href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inconsolata:wght@400;700&family=Inter:wght@400;700&family=JetBrains+Mono:wght@400;700&family=Lexend+Deca:wght@400;700&family=Roboto+Mono:wght@400;700&family=Roboto:wght@400;700&family=Ubuntu+Mono:wght@400;700&family=Ubuntu:wght@400;700&display=swap"
 			rel="stylesheet">
 
 		<link rel="shortcut icon" href="favicon.ico">
@@ -52,6 +52,25 @@
 				}
 			} catch {
 				localStorage.removeItem('fontSize');
+			}
+
+			try {
+				const rawSavedTweaks = localStorage.getItem('tweaks');
+
+				if (rawSavedTweaks) {
+					const savedTweaks = JSON.parse(rawSavedTweaks);
+
+					document.documentElement.style.setProperty(
+						'--heading-font-weight',
+						savedTweaks.boldHeadings ? '700' : '400'
+					);
+
+					if (savedTweaks.capitalizedTitle) {
+						document.head.querySelector('title').textContent = "New Tab";
+					}
+				}
+			} catch {
+				localStorage.removeItem('tweaks');
 			}
 		</script>
 	</head>

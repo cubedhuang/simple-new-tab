@@ -6,6 +6,7 @@
 	import Settings from './lib/components/Settings.svelte';
 	import SettingsIcon from './lib/components/icons/SettingsIcon.svelte';
 	import Weather from './lib/components/Weather.svelte';
+	import { clock, tweaks } from './lib/stores';
 
 	let unfocused = false;
 
@@ -20,12 +21,18 @@
 	let settingsOpen = false;
 </script>
 
+<svelte:head>
+	<title>{$tweaks.capitalizedTitle ? 'New Tab' : 'new tab'}</title>
+</svelte:head>
+
 <main
 	class="min-h-screen p-16 grid grid-cols-2 gap-8 font-main text-body transition-colors duration-300"
 	class:unfocused
 >
 	<div class="flow">
-		<h1>new tab</h1>
+		<h1>
+			{$tweaks.capitalizedTitle ? 'New Tab' : 'new tab'}
+		</h1>
 
 		<Quote />
 		<Links />
@@ -40,7 +47,10 @@
 	</div>
 
 	<div class="flow text-right">
-		<Clock />
+		{#if !$clock.hidden}
+			<Clock />
+		{/if}
+
 		<Weather />
 		<Discord />
 	</div>

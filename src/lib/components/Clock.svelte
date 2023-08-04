@@ -15,7 +15,7 @@
 		hour: 'numeric',
 		hour12: $clock.hour12,
 		minute: 'numeric',
-		second: 'numeric',
+		second: $clock.hideSeconds ? undefined : 'numeric',
 		timeZoneName: $clock.showTimezone ? 'short' : undefined
 	});
 

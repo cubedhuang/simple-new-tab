@@ -10,6 +10,7 @@
 		links,
 		presetFonts,
 		resetColors,
+		tweaks,
 		weatherKey
 	} from '../stores';
 
@@ -47,12 +48,42 @@
 			<h2>settings</h2>
 
 			<div>
+				<h3>tweaks</h3>
+
+				<p class="mt-1 flex flex-wrap gap-1">
+					<Button
+						on:click={() => {
+							$tweaks.capitalizedTitle =
+								!$tweaks.capitalizedTitle;
+						}}
+					>
+						{$tweaks.capitalizedTitle ? 'Capitalized' : 'Lowercase'}
+						Title
+					</Button>
+
+					<Button
+						on:click={() => {
+							$tweaks.bulletPoints = !$tweaks.bulletPoints;
+						}}
+					>
+						{$tweaks.bulletPoints ? 'Bullet Points' : 'Dashes'}
+					</Button>
+
+					<Button
+						on:click={() => {
+							$tweaks.boldHeadings = !$tweaks.boldHeadings;
+						}}
+					>
+						{$tweaks.boldHeadings ? 'Bold' : 'Normal'} Headings
+					</Button>
+				</p>
+			</div>
+
+			<div>
 				<h3>font</h3>
 
 				<div class="mt-2 flex items-center">
-					<p class="shrink-0">font size</p>
-
-					<div class="ml-2 w-fit">
+					<div class="w-20">
 						<Number
 							bind:value={$fontSize}
 							step={5}
@@ -61,7 +92,7 @@
 						/>
 					</div>
 
-					<p>%</p>
+					%
 				</div>
 
 				<div class="mt-4 flex flex-wrap gap-1">
@@ -72,7 +103,7 @@
 									$font = name;
 								}}
 								class={name === $font
-									? 'bg-accent text-background hover:bg-accent hover:text-background focus:bg-accent focus:text-background'
+									? '!bg-accent !text-background'
 									: ''}
 							>
 								{name}
@@ -138,6 +169,16 @@
 				<p class="mt-1">
 					<Button
 						on:click={() => {
+							$clock.hidden = !$clock.hidden;
+						}}
+					>
+						Clock {$clock.hidden ? 'Hidden' : 'Shown'}
+					</Button>
+				</p>
+
+				<p class="mt-1">
+					<Button
+						on:click={() => {
 							$clock.longMonth = !$clock.longMonth;
 						}}
 					>
@@ -176,6 +217,14 @@
 						}}
 					>
 						Timezone {$clock.showTimezone ? 'Shown' : 'Hidden'}
+					</Button>
+
+					<Button
+						on:click={() => {
+							$clock.hideSeconds = !$clock.hideSeconds;
+						}}
+					>
+						Seconds {$clock.hideSeconds ? 'Hidden' : 'Shown'}
 					</Button>
 				</p>
 			</div>

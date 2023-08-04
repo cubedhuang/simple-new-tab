@@ -13,6 +13,19 @@ function writableStored<T>(key: string, initialValue: T) {
 	return store;
 }
 
+export const tweaks = writableStored('tweaks', {
+	capitalizedTitle: false,
+	bulletPoints: false,
+	boldHeadings: false
+});
+
+tweaks.subscribe($tweaks => {
+	document.documentElement.style.setProperty(
+		'--heading-font-weight',
+		$tweaks.boldHeadings ? '700' : '400'
+	);
+});
+
 const initialColors = {
 	background: '#19101d',
 	unfocused: '#1e1e1e',
@@ -59,20 +72,14 @@ fontSize.subscribe($fontSize => {
 	document.documentElement.style.setProperty('--font-size', `${$fontSize}%`);
 });
 
-interface ClockSettings {
-	longMonth: boolean;
-	showDay: boolean;
-	hour12: boolean;
-	showTimezone: boolean;
-	dayFirst: boolean;
-}
-
-export const clock = writableStored<ClockSettings>('clock', {
+export const clock = writableStored('clock', {
+	hidden: false,
 	longMonth: true,
 	showDay: true,
 	hour12: true,
 	showTimezone: false,
-	dayFirst: false
+	dayFirst: false,
+	hideSeconds: false
 });
 
 interface Link {
