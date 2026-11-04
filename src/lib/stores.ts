@@ -1,5 +1,6 @@
 import { writable } from 'svelte/store';
 
+// see `readSetting` in public/theme.js
 function writableStored<T>(key: string, initialValue: T) {
 	const newKey = `simple-new-tab:${key}`;
 
