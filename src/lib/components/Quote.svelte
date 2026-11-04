@@ -1,16 +1,81 @@
 <script lang="ts">
-	const quote = fetch(
-		`https://api.quotable.io/random?tags=future|technology|science|time`
-	).then(res => res.json());
+	import { get } from 'svelte/store';
+	import { writableStored } from '../stores';
+
+	type Quote = {
+		content: string;
+		author: { name: string; link?: string };
+	};
+
+	// i didn't see a schema for the thing and links from remotes are scary
+	function isWebUrl(link: string | undefined): link is string {
+		try {
+			const { protocol } = new URL(link ?? '');
+			return protocol === 'http:' || protocol === 'https:';
+		} catch {
+			return false;
+		}
+	}
+
+	function isQuote(value: any): value is Quote {
+		return (
+			typeof value?.content === 'string' &&
+			typeof value?.author?.name === 'string'
+		);
+	}
+
+	async function loadQuote() {
+		return fetch(
+			`https://api.quotable.kurokeita.dev/api/quotes/random?tags=Future|Technology|Science|Time|Change`
+		)
+			.then(res => res.json())
+			.then(data => (isQuote(data.quote) ? data.quote : undefined))
+			.catch(() => undefined);
+	}
+
+	async function getQuote() {
+		const nextQuoteStore = writableStored<Quote | null>('next-quote', null);
+		const savedQuote = get(nextQuoteStore);
+
+		const nextQuote = loadQuote();
+		nextQuote.then(q => {
+			if (q) {
+				nextQuoteStore.set(q);
+			}
+		});
+
+		if (isQuote(savedQuote)) {
+			return savedQuote;
+		}
+
+		return (await loadQuote()) ?? nextQuote;
+	}
+
+	const quote = getQuote();
 </script>
 
-<div>
-	{#await quote then quote}
-		<blockquote>
-			{quote.content}
-		</blockquote>
-		<cite>
-			{quote.author}
-		</cite>
-	{/await}
-</div>
+{#await quote then quote}
+	{#if quote}
+		<figure>
+			<blockquote class="max-w-prose">
+				{quote.content}
+			</blockquote>
+			<figcaption>
+				&mdash;
+				<cite>
+					{#if isWebUrl(quote.author.link)}
+						<a
+							href={quote.author.link}
+							rel="external noopener noreferrer"
+							class="hover:text-accent transition"
+						>
+							{quote.author.name}
+						</a>
+					{:else}
+						{quote.author.name}
+					{/if}
+				</cite>
+			</figcaption>
+		</figure>
+	{/if}
+{/await}

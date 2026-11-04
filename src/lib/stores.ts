@@ -1,11 +1,16 @@
 import { writable } from 'svelte/store';
 
 // see `readSetting` in public/theme.js
-function writableStored<T>(key: string, initialValue: T) {
+export function writableStored<T>(key: string, initialValue: T) {
 	const newKey = `simple-new-tab:${key}`;
 
 	const value = localStorage.getItem(newKey) || localStorage.getItem(key);
-	const store = writable<T>(value ? JSON.parse(value) : initialValue);
+	if (value) {
+		try {
+			initialValue = JSON.parse(value);
+		} catch {}
+	}
+	const store = writable<T>(initialValue);
 
 	store.subscribe(value => {
 		localStorage.setItem(newKey, JSON.stringify(value));
@@ -15,6 +20,7 @@ function writableStored<T>(key: string, initialValue: T) {
 }
 
 export const tweaks = writableStored('tweaks', {
+	hideQuote: false,
 	capitalizedTitle: false,
 	bulletPoints: false,
 	boldHeadings: false
