@@ -332,6 +332,8 @@
 						on:click={() => {
 							const data = {
 								tweaks: $tweaks,
+								font: $font,
+								fontSize: $fontSize,
 								colors: $colors,
 								clock: $clock,
 								links: $links,
@@ -353,6 +355,8 @@
 						const data = JSON.parse(atob(importSettings));
 
 						if (data.tweaks) $tweaks = data.tweaks;
+						if (data.font) $font = data.font;
+						if (data.fontSize) $fontSize = data.fontSize;
 						if (data.colors) $colors = data.colors;
 						if (data.clock) $clock = data.clock;
 						if (data.links) $links = data.links;
