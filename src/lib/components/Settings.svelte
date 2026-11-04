@@ -35,14 +35,14 @@
 
 {#if open}
 	<div
-		class="fixed inset-0 z-10 grid place-items-center px-8 py-8 max-h-screen overflow-auto before:fixed before:inset-0 before:-z-10 before:bg-black before:bg-opacity-50"
+		class="fixed inset-0 z-10 grid place-items-center px-8 py-8 max-h-screen overflow-auto before:fixed before:inset-0 before:-z-10 before:bg-black/50"
 		on:click|self={() => (open = false)}
 		on:keydown={() => {}}
 		aria-hidden="true"
 		transition:fade={{ duration: 150 }}
 	>
 		<div
-			class="w-full max-w-screen-lg p-8 rounded-xl bg-background flow"
+			class="w-full max-w-(--breakpoint-lg) p-8 rounded-xl bg-background flow"
 			role="dialog"
 		>
 			<h2>settings</h2>
@@ -103,7 +103,7 @@
 									$font = name;
 								}}
 								class={name === $font
-									? '!bg-accent !text-background'
+									? 'bg-accent! text-background!'
 									: ''}
 							>
 								{name}

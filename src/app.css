@@ -1,6 +1,15 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@theme inline {
+	--font-main:
+		var(--font), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+		'Liberation Mono', 'Courier New', monospace;
+
+	--color-background: var(--background);
+	--color-unfocused: var(--unfocused);
+	--color-accent: var(--accent);
+	--color-body: var(--body);
+}
 
 @layer base {
 	@font-face {
@@ -21,6 +30,10 @@
 		font-weight: normal;
 		font-style: normal;
 		font-display: swap;
+	}
+
+	button:not(:disabled) {
+		cursor: pointer;
 	}
 
 	body {

@@ -65,11 +65,22 @@
 						animate:flip={{ duration: 300 }}
 					>
 						<div class="flex-1">
-							<Text placeholder="name" bind:value={link.name} />
+							<Text
+								placeholder="name"
+								bind:value={
+									$links[sectionIndex].children[linkIndex]
+										.name
+								}
+							/>
 						</div>
 
 						<div class="flex-[3]">
-							<Text placeholder="url" bind:value={link.url} />
+							<Text
+								placeholder="url"
+								bind:value={
+									$links[sectionIndex].children[linkIndex].url
+								}
+							/>
 						</div>
 
 						<div class="flex gap-1">
