@@ -53,21 +53,21 @@
 				<p class="mt-1 flex flex-wrap gap-1">
 					<Button
 						on:click={() => {
-							$tweaks.hideQuote = !$tweaks.hideQuote;
-						}}
-					>
-						Quote
-						{$tweaks.hideQuote ? 'Hidden' : 'Shown'}
-					</Button>
-
-					<Button
-						on:click={() => {
 							$tweaks.capitalizedTitle =
 								!$tweaks.capitalizedTitle;
 						}}
 					>
 						{$tweaks.capitalizedTitle ? 'Capitalized' : 'Lowercase'}
 						Title
+					</Button>
+
+					<Button
+						on:click={() => {
+							$tweaks.hideQuote = !$tweaks.hideQuote;
+						}}
+					>
+						Quote
+						{$tweaks.hideQuote ? 'Hidden' : 'Shown'}
 					</Button>
 
 					<Button
