@@ -53,6 +53,15 @@
 				<p class="mt-1 flex flex-wrap gap-1">
 					<Button
 						on:click={() => {
+							$tweaks.hideQuote = !$tweaks.hideQuote;
+						}}
+					>
+						Quote
+						{$tweaks.hideQuote ? 'Hidden' : 'Shown'}
+					</Button>
+
+					<Button
+						on:click={() => {
 							$tweaks.capitalizedTitle =
 								!$tweaks.capitalizedTitle;
 						}}
@@ -322,6 +331,7 @@
 					<Button
 						on:click={() => {
 							const data = {
+								tweaks: $tweaks,
 								colors: $colors,
 								clock: $clock,
 								links: $links,
@@ -342,6 +352,7 @@
 
 						const data = JSON.parse(atob(importSettings));
 
+						if (data.tweaks) $tweaks = data.tweaks;
 						if (data.colors) $colors = data.colors;
 						if (data.clock) $clock = data.clock;
 						if (data.links) $links = data.links;

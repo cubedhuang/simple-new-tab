@@ -26,15 +26,17 @@
 </svelte:head>
 
 <main
-	class="min-h-screen p-16 grid grid-cols-2 gap-8 font-main text-body transition-colors duration-300"
+	class="min-h-screen p-16 sm:flex gap-8 font-main text-body transition-colors duration-300"
 	class:unfocused
 >
-	<div class="flow">
+	<div class="min-w-0 flex-1 flow">
 		<h1>
 			{$tweaks.capitalizedTitle ? 'New Tab' : 'new tab'}
 		</h1>
 
-		<Quote />
+		{#if !$tweaks.hideQuote}
+			<Quote />
+		{/if}
 		<Links />
 
 		<button
@@ -46,7 +48,7 @@
 		</button>
 	</div>
 
-	<div class="flow text-right">
+	<div class="max-w-96 shrink-0 flow text-right">
 		{#if !$clock.hidden}
 			<Clock />
 		{/if}
