@@ -34,7 +34,7 @@
 					</button>
 					<button
 						class="hover:text-accent transition"
-						title="move up"
+						title="move down"
 						on:click={() => {
 							if (sectionIndex >= $links.length - 1) return;
 							[$links[sectionIndex], $links[sectionIndex + 1]] = [
@@ -74,7 +74,7 @@
 							/>
 						</div>
 
-						<div class="flex-[3]">
+						<div class="flex-3">
 							<Text
 								placeholder="url"
 								bind:value={
@@ -102,7 +102,7 @@
 							</button>
 							<button
 								class="hover:text-accent transition"
-								title="move up"
+								title="move down"
 								on:click={() => {
 									if (linkIndex >= children.length - 1) {
 										return;
