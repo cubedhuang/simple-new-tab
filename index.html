@@ -1,18 +1,19 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 		<title>new tab</title>
 
-		<link rel="preconnect" href="https://fonts.googleapis.com">
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
 			href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inconsolata:wght@400;700&family=Inter:wght@400;700&family=JetBrains+Mono:wght@400;700&family=Lexend+Deca:wght@400;700&family=Roboto+Mono:wght@400;700&family=Roboto:wght@400;700&family=Ubuntu+Mono:wght@400;700&family=Ubuntu:wght@400;700&display=swap"
-			rel="stylesheet">
+			rel="stylesheet"
+		/>
 
-		<link rel="shortcut icon" href="favicon.ico">
+		<link rel="shortcut icon" href="favicon.ico" />
 
 		<!-- the script in head before content loads prevents the initial flash of white -->
 		<script>
@@ -23,7 +24,10 @@
 					const savedColors = JSON.parse(rawSavedColors);
 
 					for (const [key, value] of Object.entries(savedColors)) {
-						document.documentElement.style.setProperty(`--${key}`, value)
+						document.documentElement.style.setProperty(
+							`--${key}`,
+							value
+						);
 					}
 				}
 			} catch {
@@ -36,7 +40,10 @@
 				if (rawSavedFont) {
 					const savedFont = JSON.parse(rawSavedFont);
 
-					document.documentElement.style.setProperty(`--font`, savedFont)
+					document.documentElement.style.setProperty(
+						`--font`,
+						savedFont
+					);
 				}
 			} catch {
 				localStorage.removeItem('font');
@@ -48,7 +55,10 @@
 				if (rawSavedFontSize) {
 					const savedFontSize = JSON.parse(rawSavedFontSize);
 
-					document.documentElement.style.setProperty(`--fontSize`, savedFontSize)
+					document.documentElement.style.setProperty(
+						`--fontSize`,
+						savedFontSize
+					);
 				}
 			} catch {
 				localStorage.removeItem('fontSize');
@@ -66,7 +76,8 @@
 					);
 
 					if (savedTweaks.capitalizedTitle) {
-						document.head.querySelector('title').textContent = "New Tab";
+						document.head.querySelector('title').textContent =
+							'New Tab';
 					}
 				}
 			} catch {
