@@ -26,26 +26,129 @@
 
 	let resetSettingsConfirmation = false;
 
+	let importSettings = '';
+	let exportMessage = '';
+	let importMessage = '';
+
 	$: if (!open) {
 		resetSettingsConfirmation = false;
+		exportMessage = '';
+		importMessage = '';
 	}
 
-	let importSettings = '';
+	function modal(dialog: HTMLDialogElement) {
+		const previouslyFocused = document.activeElement;
+
+		dialog.showModal();
+		dialog.focus();
+
+		return {
+			destroy() {
+				if (previouslyFocused instanceof HTMLElement) {
+					previouslyFocused.focus();
+				}
+			}
+		};
+	}
+
+	function encodeSettings(data: unknown) {
+		const bytes = new TextEncoder().encode(JSON.stringify(data));
+
+		return btoa(
+			Array.from(bytes, byte => String.fromCharCode(byte)).join('')
+		);
+	}
+
+	function decodeSettings(encoded: string) {
+		const binary = atob(encoded.trim());
+		const bytes = Uint8Array.from(binary, char => char.charCodeAt(0));
+
+		try {
+			return JSON.parse(
+				new TextDecoder('utf-8', { fatal: true }).decode(bytes)
+			);
+		} catch {
+			// backwards compatibility for old saves
+			return JSON.parse(binary);
+		}
+	}
+
+	async function exportToClipboard() {
+		const data = {
+			tweaks: $tweaks,
+			font: $font,
+			fontSize: $fontSize,
+			colors: $colors,
+			clock: $clock,
+			links: $links,
+			weatherKey: $weatherKey,
+			discordId: $discordId
+		};
+
+		try {
+			await navigator.clipboard.writeText(encodeSettings(data));
+			exportMessage = 'Copied to clipboard!';
+		} catch {
+			exportMessage = 'Failed to copy settings to clipboard.';
+		}
+	}
+
+	function importFromText() {
+		if (!importSettings) return;
+
+		let data;
+
+		try {
+			data = decodeSettings(importSettings);
+		} catch {
+			importMessage = "That doesn't look like exported settings.";
+			return;
+		}
+
+		if (
+			typeof data !== 'object' ||
+			data === null ||
+			Array.isArray(data) ||
+			(data.links && !Array.isArray(data.links))
+		) {
+			importMessage = "That doesn't look like exported settings.";
+			return;
+		}
+
+		if (data.tweaks) $tweaks = data.tweaks;
+		if (data.font) $font = data.font;
+		if (data.fontSize) $fontSize = data.fontSize;
+		if (data.colors) $colors = data.colors;
+		if (data.clock) $clock = data.clock;
+		if (data.links) $links = data.links;
+		if (data.weatherKey) $weatherKey = data.weatherKey;
+		if (data.discordId) $discordId = data.discordId;
+
+		customFont = presetFonts.includes($font) ? '' : $font;
+		importSettings = '';
+		importMessage = 'Settings imported!';
+	}
 </script>
 
 {#if open}
-	<div
-		class="fixed inset-0 z-10 grid place-items-center px-8 py-8 max-h-screen overflow-auto before:fixed before:inset-0 before:-z-10 before:bg-black/50"
+	<dialog
+		class="fixed inset-0 z-10 grid place-items-center size-full max-w-none max-h-screen px-8 py-8 overflow-auto bg-transparent text-body outline-hidden before:fixed before:inset-0 before:-z-10 before:bg-black/50"
+		aria-labelledby="settings-title"
+		tabindex="-1"
+		use:modal
 		on:click|self={() => (open = false)}
-		on:keydown={() => {}}
-		aria-hidden="true"
+		on:cancel|preventDefault={() => (open = false)}
+		on:close={() => (open = false)}
 		transition:fade={{ duration: 150 }}
 	>
 		<div
 			class="w-full max-w-(--breakpoint-lg) p-8 rounded-xl bg-background flow"
-			role="dialog"
 		>
-			<h2>settings</h2>
+			<div class="flex items-baseline justify-between gap-2">
+				<h2 id="settings-title">settings</h2>
+
+				<Button on:click={() => (open = false)}>done</Button>
+			</div>
 
 			<div>
 				<h3>tweaks</h3>
@@ -327,52 +430,35 @@
 			<div>
 				<h3>save and load data</h3>
 
-				<p class="mt-2">
-					<Button
-						on:click={() => {
-							const data = {
-								tweaks: $tweaks,
-								font: $font,
-								fontSize: $fontSize,
-								colors: $colors,
-								clock: $clock,
-								links: $links,
-								weatherKey: $weatherKey,
-								discordId: $discordId
-							};
-
-							navigator.clipboard.writeText(
-								btoa(JSON.stringify(data))
-							);
-						}}>export to clipboard</Button
-					>
+				<p class="mt-2 flex items-baseline gap-2">
+					<Button on:click={exportToClipboard}>
+						export to clipboard
+					</Button>
+					{#if exportMessage}
+						<span role="status">{exportMessage}</span>
+					{/if}
 				</p>
 
 				<form
-					on:submit|preventDefault={() => {
-						if (!importSettings) return;
-
-						const data = JSON.parse(atob(importSettings));
-
-						if (data.tweaks) $tweaks = data.tweaks;
-						if (data.font) $font = data.font;
-						if (data.fontSize) $fontSize = data.fontSize;
-						if (data.colors) $colors = data.colors;
-						if (data.clock) $clock = data.clock;
-						if (data.links) $links = data.links;
-						if (data.weatherKey) $weatherKey = data.weatherKey;
-						if (data.discordId) $discordId = data.discordId;
-					}}
+					on:submit|preventDefault={importFromText}
 					class="flex gap-1 mt-1"
 				>
-					<Text bind:value={importSettings} placeholder="import..." />
+					<Text
+						bind:value={importSettings}
+						placeholder="import..."
+						on:input={() => (importMessage = '')}
+					/>
 					<Button type="submit">submit</Button>
 				</form>
+
+				{#if importMessage}
+					<p class="mt-2" role="status">{importMessage}</p>
+				{/if}
 			</div>
 
 			<p>Changes are automatically saved.</p>
 
 			<Button on:click={() => (open = false)}>done</Button>
 		</div>
-	</div>
+	</dialog>
 {/if}
