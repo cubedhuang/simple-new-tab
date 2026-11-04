@@ -1,5 +1,12 @@
 <script lang="ts">
 	import { links, tweaks } from '../stores';
+
+	function normalize(url: string) {
+		const trimmed = url.trim();
+		const hasScheme = /^[a-z][a-z0-9+.-]*:(?!\d)/i.test(trimmed);
+		if (!trimmed || hasScheme) return trimmed;
+		return `https://${trimmed.replace(/^\/\//, '')}`;
+	}
 </script>
 
 <div class="flow">
@@ -14,7 +21,10 @@
 						? 'ml-6 list-disc'
 						: "before:content-['-_']"}
 				>
-					<a class="hover:text-accent transition-colors" href={url}>
+					<a
+						class="hover:text-accent transition-colors"
+						href={normalize(url)}
+					>
 						{name}
 					</a>
 				</li>
