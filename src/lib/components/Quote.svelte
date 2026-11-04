@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { get } from 'svelte/store';
-	import { writableStored } from '../stores';
+	import { tweaks, writableStored } from '../stores';
 
 	type Quote = {
 		content: string;
@@ -61,7 +61,11 @@
 				{quote.content}
 			</blockquote>
 			<figcaption>
-				&mdash;
+				{#if $tweaks.bulletPoints}
+					&mdash;
+				{:else}
+					-
+				{/if}
 				<cite>
 					{#if isWebUrl(quote.author.link)}
 						<a
