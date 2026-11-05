@@ -32,8 +32,8 @@
 			.catch(() => undefined);
 	}
 
+	const nextQuoteStore = new Stored<Quote | null>('next-quote', null);
 	async function getQuote() {
-		const nextQuoteStore = new Stored<Quote | null>('next-quote', null);
 		const savedQuote = nextQuoteStore.value;
 
 		const nextQuote = loadQuote();
