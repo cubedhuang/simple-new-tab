@@ -11,7 +11,8 @@
 		presetFonts,
 		resetColors,
 		tweaks,
-		weatherKey
+		weatherKey,
+		weatherUnits
 	} from '../stores';
 
 	import Button from './Button.svelte';
@@ -82,6 +83,7 @@
 			clock: $clock,
 			links: $links,
 			weatherKey: $weatherKey,
+			weatherUnits: $weatherUnits,
 			discordId: $discordId
 		};
 
@@ -122,6 +124,7 @@
 		if (data.clock) $clock = data.clock;
 		if (data.links) $links = data.links;
 		if (data.weatherKey) $weatherKey = data.weatherKey;
+		if (data.weatherUnits) $weatherUnits = data.weatherUnits;
 		if (data.discordId) $discordId = data.discordId;
 
 		customFont = presetFonts.includes($font) ? '' : $font;
@@ -363,6 +366,19 @@
 						placeholder="weather api key"
 						bind:value={$weatherKey}
 					/>
+				</p>
+
+				<p class="mt-1">
+					<Button
+						on:click={() => {
+							$weatherUnits =
+								$weatherUnits === 'metric'
+									? 'imperial'
+									: 'metric';
+						}}
+					>
+						{$weatherUnits === 'metric' ? 'Metric' : 'Imperial'} Units
+					</Button>
 				</p>
 			</div>
 

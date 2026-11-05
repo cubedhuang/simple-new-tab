@@ -153,3 +153,7 @@ export const links = writableStored<LinkSection[]>('links', [
 export const discordId = writableStored('discordId', '');
 
 export const weatherKey = writableStored('weatherKey', '');
+export const weatherUnits = writableStored<'imperial' | 'metric'>(
+	'weather-units',
+	'imperial'
+);

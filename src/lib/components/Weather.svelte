@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { weatherKey } from '../stores';
+	import { weatherKey, weatherUnits } from '../stores';
 
 	interface WeatherData {
 		coord: Coord;
@@ -95,6 +95,15 @@
 	}
 
 	$: data = fetchWeatherData($weatherKey);
+
+	$: formatTemperature = (fahrenheit: number) =>
+		$weatherUnits === 'metric'
+			? `${(((fahrenheit - 32) * 5) / 9).toFixed(2)}°C`
+			: `${fahrenheit.toFixed(2)}°F`;
+	$: formatSpeed = (mph: number) =>
+		$weatherUnits === 'metric'
+			? `${(mph * 1.609344).toFixed(2)} km/h`
+			: `${mph.toFixed(2)} mph`;
 </script>
 
 {#await data then data}
@@ -107,16 +116,16 @@
 			</div>
 			<div>
 				<h2>Temperature</h2>
-				<p>temp {data.main.temp.toFixed(2)}°F</p>
-				<p>min {data.main.temp_min.toFixed(2)}°F</p>
-				<p>max {data.main.temp_max.toFixed(2)}°F</p>
-				<p>feels like {data.main.feels_like.toFixed(2)}°F</p>
+				<p>temp {formatTemperature(data.main.temp)}</p>
+				<p>min {formatTemperature(data.main.temp_min)}</p>
+				<p>max {formatTemperature(data.main.temp_max)}</p>
+				<p>feels like {formatTemperature(data.main.feels_like)}</p>
 			</div>
 			<div>
 				<h2>Condition</h2>
 				<p>humidity {data.main.humidity}%</p>
 				<p>clouds {data.clouds.all}%</p>
-				<p>wind {data.wind.speed.toFixed(2)} mph</p>
+				<p>wind {formatSpeed(data.wind.speed)}</p>
 			</div>
 		</div>
 	{/if}
