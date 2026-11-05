@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { flip } from 'svelte/animate';
-	import { links, generateId } from '../stores';
+	import { links, generateId } from '../stores.svelte';
 	import Button from './Button.svelte';
 	import Text from './Text.svelte';
 	import ArrowDown from './icons/ArrowDown.svelte';
@@ -11,11 +11,11 @@
 <div>
 	<h3>links</h3>
 
-	{#each $links as { id, title, children }, sectionIndex (id)}
+	{#each links.value as section, sectionIndex (section.id)}
 		<div animate:flip={{ duration: 300 }} class="mt-2 flex flex-col gap-1">
 			<div class="flex items-center">
 				<h4 class="flex-1">
-					<Text placeholder="title" bind:value={title} />
+					<Text placeholder="title" bind:value={section.title} />
 				</h4>
 
 				<div class="flex gap-1">
@@ -24,9 +24,12 @@
 						title="move up"
 						on:click={() => {
 							if (sectionIndex <= 0) return;
-							[$links[sectionIndex], $links[sectionIndex - 1]] = [
-								$links[sectionIndex - 1],
-								$links[sectionIndex]
+							[
+								links.value[sectionIndex],
+								links.value[sectionIndex - 1]
+							] = [
+								links.value[sectionIndex - 1],
+								links.value[sectionIndex]
 							];
 						}}
 					>
@@ -36,10 +39,13 @@
 						class="hover:text-accent transition"
 						title="move down"
 						on:click={() => {
-							if (sectionIndex >= $links.length - 1) return;
-							[$links[sectionIndex], $links[sectionIndex + 1]] = [
-								$links[sectionIndex + 1],
-								$links[sectionIndex]
+							if (sectionIndex >= links.value.length - 1) return;
+							[
+								links.value[sectionIndex],
+								links.value[sectionIndex + 1]
+							] = [
+								links.value[sectionIndex + 1],
+								links.value[sectionIndex]
 							];
 						}}
 					>
@@ -49,8 +55,7 @@
 						class="hover:text-red-400 transition"
 						title="delete"
 						on:click={() => {
-							$links.splice(sectionIndex, 1);
-							$links = $links;
+							links.value.splice(sectionIndex, 1);
 						}}
 					>
 						<DeleteIcon />
@@ -59,28 +64,17 @@
 			</div>
 
 			<ul class="pl-4 flex flex-col gap-1">
-				{#each children as link, linkIndex (link.id)}
+				{#each section.children as link, linkIndex (link.id)}
 					<li
 						class="flex items-center gap-1"
 						animate:flip={{ duration: 300 }}
 					>
 						<div class="flex-1">
-							<Text
-								placeholder="name"
-								bind:value={
-									$links[sectionIndex].children[linkIndex]
-										.name
-								}
-							/>
+							<Text placeholder="name" bind:value={link.name} />
 						</div>
 
 						<div class="flex-3">
-							<Text
-								placeholder="url"
-								bind:value={
-									$links[sectionIndex].children[linkIndex].url
-								}
-							/>
+							<Text placeholder="url" bind:value={link.url} />
 						</div>
 
 						<div class="flex gap-1">
@@ -90,11 +84,11 @@
 								on:click={() => {
 									if (linkIndex <= 0) return;
 									[
-										children[linkIndex],
-										children[linkIndex - 1]
+										section.children[linkIndex],
+										section.children[linkIndex - 1]
 									] = [
-										children[linkIndex - 1],
-										children[linkIndex]
+										section.children[linkIndex - 1],
+										section.children[linkIndex]
 									];
 								}}
 							>
@@ -104,16 +98,19 @@
 								class="hover:text-accent transition"
 								title="move down"
 								on:click={() => {
-									if (linkIndex >= children.length - 1) {
+									if (
+										linkIndex >=
+										section.children.length - 1
+									) {
 										return;
 									}
 
 									[
-										children[linkIndex],
-										children[linkIndex + 1]
+										section.children[linkIndex],
+										section.children[linkIndex + 1]
 									] = [
-										children[linkIndex + 1],
-										children[linkIndex]
+										section.children[linkIndex + 1],
+										section.children[linkIndex]
 									];
 								}}
 							>
@@ -123,8 +120,7 @@
 								class="hover:text-red-400 transition"
 								title="delete"
 								on:click={() => {
-									children.splice(linkIndex, 1);
-									children = children;
+									section.children.splice(linkIndex, 1);
 								}}
 							>
 								<DeleteIcon />
@@ -137,12 +133,11 @@
 			<p class="ml-4">
 				<Button
 					on:click={() => {
-						children.push({
+						section.children.push({
 							id: generateId(),
 							name: '',
 							url: ''
 						});
-						children = children;
 					}}
 				>
 					+ link
@@ -154,12 +149,11 @@
 	<p class="mt-2">
 		<Button
 			on:click={() => {
-				$links.push({
+				links.value.push({
 					id: generateId(),
 					title: '',
 					children: []
 				});
-				$links = $links;
 			}}
 		>
 			+ section

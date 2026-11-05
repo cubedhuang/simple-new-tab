@@ -1,25 +1,29 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
 
-	import { clock } from '../stores';
+	import { clock } from '../stores.svelte';
 
-	$: locale = $clock.dayFirst ? 'en-GB' : 'en-US';
+	const locale = $derived(clock.value.dayFirst ? 'en-GB' : 'en-US');
 
-	$: df = new Intl.DateTimeFormat(locale, {
-		month: $clock.longMonth ? 'long' : '2-digit',
-		day: $clock.longMonth ? 'numeric' : '2-digit',
-		year: 'numeric',
-		weekday: $clock.showDay ? 'long' : undefined
-	});
-	$: tf = new Intl.DateTimeFormat('en', {
-		hour: 'numeric',
-		hour12: $clock.hour12,
-		minute: 'numeric',
-		second: $clock.hideSeconds ? undefined : 'numeric',
-		timeZoneName: $clock.showTimezone ? 'short' : undefined
-	});
+	const df = $derived(
+		new Intl.DateTimeFormat(locale, {
+			month: clock.value.longMonth ? 'long' : '2-digit',
+			day: clock.value.longMonth ? 'numeric' : '2-digit',
+			year: 'numeric',
+			weekday: clock.value.showDay ? 'long' : undefined
+		})
+	);
+	const tf = $derived(
+		new Intl.DateTimeFormat('en', {
+			hour: 'numeric',
+			hour12: clock.value.hour12,
+			minute: 'numeric',
+			second: clock.value.hideSeconds ? undefined : 'numeric',
+			timeZoneName: clock.value.showTimezone ? 'short' : undefined
+		})
+	);
 
-	let now = Date.now();
+	let now = $state(Date.now());
 
 	const id = setInterval(() => {
 		now = Date.now();

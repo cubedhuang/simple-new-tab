@@ -3,7 +3,7 @@
 
 const rootStyle = document.documentElement.style;
 
-// see `writableStored` in src/lib/stores.ts
+// see `Stored` in src/lib/stores.svelte.ts
 function readSetting(key, apply) {
 	const newKey = `simple-new-tab:${key}`;
 

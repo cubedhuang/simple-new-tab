@@ -1,21 +1,21 @@
 <script lang="ts">
-	import { lanyard } from '../lanyard';
+	import { lanyard } from '../lanyard.svelte';
 </script>
 
-{#if $lanyard}
+{#if lanyard.data}
 	<div class="flow">
 		<div>
 			<h2>Discord</h2>
 
 			<p>
-				{$lanyard.discord_user.username}
+				{lanyard.data.discord_user.username}
 			</p>
 			<p>
-				{$lanyard.discord_status}
+				{lanyard.data.discord_status}
 			</p>
 		</div>
 
-		{#each $lanyard.activities as activity}
+		{#each lanyard.data.activities as activity}
 			<div>
 				<h2>{activity.name}</h2>
 

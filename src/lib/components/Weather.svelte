@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { weatherKey, weatherUnits } from '../stores';
+	import { weatherKey, weatherUnits } from '../stores.svelte';
 
 	interface WeatherData {
 		coord: Coord;
@@ -94,16 +94,19 @@
 		return weatherData;
 	}
 
-	$: data = fetchWeatherData($weatherKey);
+	const data = $derived(fetchWeatherData(weatherKey.value));
 
-	$: formatTemperature = (fahrenheit: number) =>
-		$weatherUnits === 'metric'
+	function formatTemperature(fahrenheit: number) {
+		return weatherUnits.value === 'metric'
 			? `${(((fahrenheit - 32) * 5) / 9).toFixed(2)}°C`
 			: `${fahrenheit.toFixed(2)}°F`;
-	$: formatSpeed = (mph: number) =>
-		$weatherUnits === 'metric'
+	}
+
+	function formatSpeed(mph: number) {
+		return weatherUnits.value === 'metric'
 			? `${(mph * 1.609344).toFixed(2)} km/h`
 			: `${mph.toFixed(2)} mph`;
+	}
 </script>
 
 {#await data then data}

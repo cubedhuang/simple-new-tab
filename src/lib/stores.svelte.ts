@@ -1,35 +1,41 @@
-import { writable } from 'svelte/store';
-
-// see `readSetting` in public/theme.js
-export function writableStored<T>(key: string, initialValue: T) {
-	const newKey = `simple-new-tab:${key}`;
-
-	const value = localStorage.getItem(newKey) || localStorage.getItem(key);
-	if (value) {
-		try {
-			initialValue = JSON.parse(value);
-		} catch {}
-	}
-	const store = writable<T>(initialValue);
-
-	store.subscribe(value => {
-		localStorage.setItem(newKey, JSON.stringify(value));
+function globalEffect(fn: () => void) {
+	$effect.root(() => {
+		$effect(fn);
 	});
-
-	return store;
 }
 
-export const tweaks = writableStored('tweaks', {
+// see `readSetting` in public/theme.js
+export class Stored<T> {
+	value = $state() as T;
+
+	constructor(key: string, initialValue: T) {
+		const newKey = `simple-new-tab:${key}`;
+
+		const saved = localStorage.getItem(newKey) || localStorage.getItem(key);
+		if (saved) {
+			try {
+				initialValue = JSON.parse(saved);
+			} catch {}
+		}
+		this.value = initialValue;
+
+		globalEffect(() => {
+			localStorage.setItem(newKey, JSON.stringify(this.value));
+		});
+	}
+}
+
+export const tweaks = new Stored('tweaks', {
 	hideQuote: false,
 	capitalizedTitle: false,
 	bulletPoints: false,
 	boldHeadings: false
 });
 
-tweaks.subscribe($tweaks => {
+globalEffect(() => {
 	document.documentElement.style.setProperty(
 		'--heading-font-weight',
-		$tweaks.boldHeadings ? '700' : '400'
+		tweaks.value.boldHeadings ? '700' : '400'
 	);
 });
 
@@ -40,18 +46,18 @@ const initialColors = {
 	body: '#a5acb6'
 };
 
-export const colors = writableStored<Record<string, string>>('colors', {
+export const colors = new Stored<Record<string, string>>('colors', {
 	...initialColors
 });
 
-colors.subscribe($colors => {
-	for (const [key, value] of Object.entries($colors)) {
+globalEffect(() => {
+	for (const [key, value] of Object.entries(colors.value)) {
 		document.documentElement.style.setProperty(`--${key}`, value);
 	}
 });
 
 export function resetColors() {
-	colors.set({ ...initialColors });
+	colors.value = { ...initialColors };
 }
 
 export const presetFonts = [
@@ -68,18 +74,21 @@ export const presetFonts = [
 	'Ubuntu Mono'
 ];
 
-export const font = writableStored('font', 'Roboto Mono');
-export const fontSize = writableStored('font-size', 100);
+export const font = new Stored('font', 'Roboto Mono');
+export const fontSize = new Stored('font-size', 100);
 
-font.subscribe($font => {
-	document.documentElement.style.setProperty('--font', $font);
+globalEffect(() => {
+	document.documentElement.style.setProperty('--font', font.value);
 });
 
-fontSize.subscribe($fontSize => {
-	document.documentElement.style.setProperty('--font-size', `${$fontSize}%`);
+globalEffect(() => {
+	document.documentElement.style.setProperty(
+		'--font-size',
+		`${fontSize.value}%`
+	);
 });
 
-export const clock = writableStored('clock', {
+export const clock = new Stored('clock', {
 	hidden: false,
 	longMonth: true,
 	showDay: true,
@@ -105,7 +114,7 @@ export function generateId() {
 	return Math.random().toString(36).substring(2, 10);
 }
 
-export const links = writableStored<LinkSection[]>('links', [
+export const links = new Stored<LinkSection[]>('links', [
 	{
 		id: generateId(),
 		title: 'simple',
@@ -150,10 +159,10 @@ export const links = writableStored<LinkSection[]>('links', [
 	}
 ]);
 
-export const discordId = writableStored('discordId', '');
+export const discordId = new Stored('discordId', '');
 
-export const weatherKey = writableStored('weatherKey', '');
-export const weatherUnits = writableStored<'imperial' | 'metric'>(
+export const weatherKey = new Stored('weatherKey', '');
+export const weatherUnits = new Stored<'imperial' | 'metric'>(
 	'weather-units',
 	'imperial'
 );

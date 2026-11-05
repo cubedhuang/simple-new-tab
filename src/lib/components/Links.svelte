@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { links, tweaks } from '../stores';
+	import { links, tweaks } from '../stores.svelte';
 
 	function normalize(url: string) {
 		const trimmed = url.trim();
@@ -10,14 +10,14 @@
 </script>
 
 <div class="flow">
-	{#each $links as { title, children }}
+	{#each links.value as { title, children }}
 		<ul>
 			<li>
 				<h2>{title}</h2>
 			</li>
 			{#each children as { name, url }}
 				<li
-					class={$tweaks.bulletPoints
+					class={tweaks.value.bulletPoints
 						? 'ml-6 list-disc'
 						: "before:content-['-_']"}
 				>

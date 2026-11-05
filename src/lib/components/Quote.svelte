@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { get } from 'svelte/store';
-	import { tweaks, writableStored } from '../stores';
+	import { Stored, tweaks } from '../stores.svelte';
 
 	type Quote = {
 		content: string;
@@ -34,13 +33,13 @@
 	}
 
 	async function getQuote() {
-		const nextQuoteStore = writableStored<Quote | null>('next-quote', null);
-		const savedQuote = get(nextQuoteStore);
+		const nextQuoteStore = new Stored<Quote | null>('next-quote', null);
+		const savedQuote = nextQuoteStore.value;
 
 		const nextQuote = loadQuote();
 		nextQuote.then(q => {
 			if (q) {
-				nextQuoteStore.set(q);
+				nextQuoteStore.value = q;
 			}
 		});
 
@@ -61,7 +60,7 @@
 				{quote.content}
 			</blockquote>
 			<figcaption>
-				{#if $tweaks.bulletPoints}
+				{#if tweaks.value.bulletPoints}
 					&mdash;
 				{:else}
 					-

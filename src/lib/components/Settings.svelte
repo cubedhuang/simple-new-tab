@@ -13,7 +13,7 @@
 		tweaks,
 		weatherKey,
 		weatherUnits
-	} from '../stores';
+	} from '../stores.svelte';
 
 	import Button from './Button.svelte';
 	import Password from './Password.svelte';
@@ -23,7 +23,7 @@
 
 	export let open = true;
 
-	let customFont = presetFonts.includes($font) ? '' : $font;
+	let customFont = presetFonts.includes(font.value) ? '' : font.value;
 
 	let resetSettingsConfirmation = false;
 
@@ -76,15 +76,15 @@
 
 	async function exportToClipboard() {
 		const data = {
-			tweaks: $tweaks,
-			font: $font,
-			fontSize: $fontSize,
-			colors: $colors,
-			clock: $clock,
-			links: $links,
-			weatherKey: $weatherKey,
-			weatherUnits: $weatherUnits,
-			discordId: $discordId
+			tweaks: tweaks.value,
+			font: font.value,
+			fontSize: fontSize.value,
+			colors: colors.value,
+			clock: clock.value,
+			links: links.value,
+			weatherKey: weatherKey.value,
+			weatherUnits: weatherUnits.value,
+			discordId: discordId.value
 		};
 
 		try {
@@ -117,17 +117,17 @@
 			return;
 		}
 
-		if (data.tweaks) $tweaks = data.tweaks;
-		if (data.font) $font = data.font;
-		if (data.fontSize) $fontSize = data.fontSize;
-		if (data.colors) $colors = data.colors;
-		if (data.clock) $clock = data.clock;
-		if (data.links) $links = data.links;
-		if (data.weatherKey) $weatherKey = data.weatherKey;
-		if (data.weatherUnits) $weatherUnits = data.weatherUnits;
-		if (data.discordId) $discordId = data.discordId;
+		if (data.tweaks) tweaks.value = data.tweaks;
+		if (data.font) font.value = data.font;
+		if (data.fontSize) fontSize.value = data.fontSize;
+		if (data.colors) colors.value = data.colors;
+		if (data.clock) clock.value = data.clock;
+		if (data.links) links.value = data.links;
+		if (data.weatherKey) weatherKey.value = data.weatherKey;
+		if (data.weatherUnits) weatherUnits.value = data.weatherUnits;
+		if (data.discordId) discordId.value = data.discordId;
 
-		customFont = presetFonts.includes($font) ? '' : $font;
+		customFont = presetFonts.includes(font.value) ? '' : font.value;
 		importSettings = '';
 		importMessage = 'Settings imported!';
 	}
@@ -159,37 +159,41 @@
 				<p class="mt-1 flex flex-wrap gap-1">
 					<Button
 						on:click={() => {
-							$tweaks.capitalizedTitle =
-								!$tweaks.capitalizedTitle;
+							tweaks.value.capitalizedTitle =
+								!tweaks.value.capitalizedTitle;
 						}}
 					>
-						{$tweaks.capitalizedTitle ? 'Capitalized' : 'Lowercase'}
+						{tweaks.value.capitalizedTitle
+							? 'Capitalized'
+							: 'Lowercase'}
 						Title
 					</Button>
 
 					<Button
 						on:click={() => {
-							$tweaks.hideQuote = !$tweaks.hideQuote;
+							tweaks.value.hideQuote = !tweaks.value.hideQuote;
 						}}
 					>
 						Quote
-						{$tweaks.hideQuote ? 'Hidden' : 'Shown'}
+						{tweaks.value.hideQuote ? 'Hidden' : 'Shown'}
 					</Button>
 
 					<Button
 						on:click={() => {
-							$tweaks.bulletPoints = !$tweaks.bulletPoints;
+							tweaks.value.bulletPoints =
+								!tweaks.value.bulletPoints;
 						}}
 					>
-						{$tweaks.bulletPoints ? 'Bullet Points' : 'Dashes'}
+						{tweaks.value.bulletPoints ? 'Bullet Points' : 'Dashes'}
 					</Button>
 
 					<Button
 						on:click={() => {
-							$tweaks.boldHeadings = !$tweaks.boldHeadings;
+							tweaks.value.boldHeadings =
+								!tweaks.value.boldHeadings;
 						}}
 					>
-						{$tweaks.boldHeadings ? 'Bold' : 'Normal'} Headings
+						{tweaks.value.boldHeadings ? 'Bold' : 'Normal'} Headings
 					</Button>
 				</p>
 			</div>
@@ -200,7 +204,7 @@
 				<div class="mt-2 flex items-center">
 					<div class="w-20">
 						<Number
-							bind:value={$fontSize}
+							bind:value={fontSize.value}
 							step={5}
 							min={50}
 							max={200}
@@ -215,9 +219,9 @@
 						<div class="contents" style:font-family={name}>
 							<Button
 								on:click={() => {
-									$font = name;
+									font.value = name;
 								}}
-								class={name === $font
+								class={name === font.value
 									? 'bg-accent! text-background!'
 									: ''}
 							>
@@ -233,9 +237,9 @@
 						bind:value={customFont}
 						on:input={() => {
 							if (customFont === '') {
-								$font = 'Roboto Mono';
+								font.value = 'Roboto Mono';
 							} else {
-								$font = customFont;
+								font.value = customFont;
 							}
 						}}
 					/>
@@ -253,13 +257,13 @@
 				<h3>colors</h3>
 
 				<div class="mt-2 flex flex-wrap gap-2">
-					{#each Object.keys($colors) as name}
+					{#each Object.keys(colors.value) as name}
 						<label
 							class="flex items-center bg-black/30 cursor-pointer rounded-lg hover:text-accent transition-colors focus-within:text-accent"
 						>
 							<span
 								class="h-full w-4 rounded-l-lg border-2 border-gray-600/30"
-								style:background={$colors[name]}
+								style:background={colors.value[name]}
 							></span>
 
 							<span class="px-2 py-1">
@@ -269,7 +273,7 @@
 							<input
 								type="color"
 								class="sr-only self-end"
-								bind:value={$colors[name]}
+								bind:value={colors.value[name]}
 							/>
 						</label>
 					{/each}
@@ -284,62 +288,63 @@
 				<p class="mt-1">
 					<Button
 						on:click={() => {
-							$clock.hidden = !$clock.hidden;
+							clock.value.hidden = !clock.value.hidden;
 						}}
 					>
-						Clock {$clock.hidden ? 'Hidden' : 'Shown'}
+						Clock {clock.value.hidden ? 'Hidden' : 'Shown'}
 					</Button>
 				</p>
 
 				<p class="mt-1">
 					<Button
 						on:click={() => {
-							$clock.longMonth = !$clock.longMonth;
+							clock.value.longMonth = !clock.value.longMonth;
 						}}
 					>
-						Month {$clock.longMonth ? 'Name' : 'Number'}
+						Month {clock.value.longMonth ? 'Name' : 'Number'}
 					</Button>
 
 					<Button
 						on:click={() => {
-							$clock.showDay = !$clock.showDay;
+							clock.value.showDay = !clock.value.showDay;
 						}}
 					>
-						Day of Week {$clock.showDay ? 'Shown' : 'Hidden'}
+						Day of Week {clock.value.showDay ? 'Shown' : 'Hidden'}
 					</Button>
 
 					<Button
 						on:click={() => {
-							$clock.dayFirst = !$clock.dayFirst;
+							clock.value.dayFirst = !clock.value.dayFirst;
 						}}
 					>
-						{$clock.dayFirst ? 'Day' : 'Month'} First
+						{clock.value.dayFirst ? 'Day' : 'Month'} First
 					</Button>
 				</p>
 
 				<p class="mt-1">
 					<Button
 						on:click={() => {
-							$clock.hour12 = !$clock.hour12;
+							clock.value.hour12 = !clock.value.hour12;
 						}}
 					>
-						{$clock.hour12 ? 12 : 24} Hour Format
+						{clock.value.hour12 ? 12 : 24} Hour Format
 					</Button>
 
 					<Button
 						on:click={() => {
-							$clock.showTimezone = !$clock.showTimezone;
+							clock.value.showTimezone =
+								!clock.value.showTimezone;
 						}}
 					>
-						Timezone {$clock.showTimezone ? 'Shown' : 'Hidden'}
+						Timezone {clock.value.showTimezone ? 'Shown' : 'Hidden'}
 					</Button>
 
 					<Button
 						on:click={() => {
-							$clock.hideSeconds = !$clock.hideSeconds;
+							clock.value.hideSeconds = !clock.value.hideSeconds;
 						}}
 					>
-						Seconds {$clock.hideSeconds ? 'Hidden' : 'Shown'}
+						Seconds {clock.value.hideSeconds ? 'Hidden' : 'Shown'}
 					</Button>
 				</p>
 			</div>
@@ -364,20 +369,22 @@
 				<p class="mt-1">
 					<Password
 						placeholder="weather api key"
-						bind:value={$weatherKey}
+						bind:value={weatherKey.value}
 					/>
 				</p>
 
 				<p class="mt-1">
 					<Button
 						on:click={() => {
-							$weatherUnits =
-								$weatherUnits === 'metric'
+							weatherUnits.value =
+								weatherUnits.value === 'metric'
 									? 'imperial'
 									: 'metric';
 						}}
 					>
-						{$weatherUnits === 'metric' ? 'Metric' : 'Imperial'} Units
+						{weatherUnits.value === 'metric'
+							? 'Metric'
+							: 'Imperial'} Units
 					</Button>
 				</p>
 			</div>
@@ -399,7 +406,7 @@
 				<p class="mt-1">
 					<Text
 						placeholder="discord user id"
-						bind:value={$discordId}
+						bind:value={discordId.value}
 					/>
 				</p>
 			</div>

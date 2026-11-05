@@ -6,7 +6,7 @@
 	import Settings from './lib/components/Settings.svelte';
 	import SettingsIcon from './lib/components/icons/SettingsIcon.svelte';
 	import Weather from './lib/components/Weather.svelte';
-	import { clock, tweaks } from './lib/stores';
+	import { clock, tweaks } from './lib/stores.svelte';
 
 	let unfocused = false;
 
@@ -22,7 +22,7 @@
 </script>
 
 <svelte:head>
-	<title>{$tweaks.capitalizedTitle ? 'New Tab' : 'new tab'}</title>
+	<title>{tweaks.value.capitalizedTitle ? 'New Tab' : 'new tab'}</title>
 </svelte:head>
 
 <main
@@ -31,10 +31,10 @@
 >
 	<div class="min-w-0 flex-1 flow">
 		<h1>
-			{$tweaks.capitalizedTitle ? 'New Tab' : 'new tab'}
+			{tweaks.value.capitalizedTitle ? 'New Tab' : 'new tab'}
 		</h1>
 
-		{#if !$tweaks.hideQuote}
+		{#if !tweaks.value.hideQuote}
 			<Quote />
 		{/if}
 		<Links />
@@ -49,7 +49,7 @@
 	</div>
 
 	<div class="max-w-96 shrink-0 flow text-right">
-		{#if !$clock.hidden}
+		{#if !clock.value.hidden}
 			<Clock />
 		{/if}
 
