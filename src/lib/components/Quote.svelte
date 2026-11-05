@@ -3,82 +3,72 @@
 
 	type Quote = {
 		content: string;
-		author: { name: string; link?: string };
+		author: string;
+		link: string;
+		tags: string[];
 	};
 
-	// i didn't see a schema for the thing and links from remotes are scary
-	function isWebUrl(link: string | undefined): link is string {
-		try {
-			const { protocol } = new URL(link ?? '');
-			return protocol === 'http:' || protocol === 'https:';
-		} catch {
-			return false;
-		}
-	}
-
-	function isQuote(value: any): value is Quote {
-		return (
-			typeof value?.content === 'string' &&
-			typeof value?.author?.name === 'string'
-		);
-	}
+	const TAGS = [
+		'Future',
+		'Technology',
+		'Science',
+		'Time',
+		'Change',
+		'Philosophy',
+		'History',
+		'Knowledge',
+		'Imagination',
+		'Creativity',
+		'Mathematics',
+		'Genius',
+		'Nature',
+		'Truth',
+		'Education',
+		'Literature',
+		'Opportunity',
+		'Humorous',
+		'Life'
+	];
 
 	async function loadQuote() {
-		return fetch(
-			`https://api.quotable.kurokeita.dev/api/quotes/random?tags=Future|Technology|Science|Time|Change`
-		)
-			.then(res => res.json())
-			.then(data => (isQuote(data.quote) ? data.quote : undefined))
-			.catch(() => undefined);
+		const quotes: Quote[] = await fetch('/quotes.json').then(res =>
+			res.json()
+		);
+		const matching = quotes.filter(({ tags }) =>
+			tags.some(tag => TAGS.includes(tag))
+		);
+
+		return matching[Math.floor(Math.random() * matching.length)];
 	}
 
-	const nextQuoteStore = new Stored<Quote | null>('next-quote', null);
-	async function getQuote() {
-		const savedQuote = nextQuoteStore.value;
+	const cachedQuote = new Stored<Quote | null>('cached-quote', null);
+	const quote = cachedQuote.value ?? loadQuote();
 
-		const nextQuote = loadQuote();
-		nextQuote.then(q => {
-			if (q) {
-				nextQuoteStore.value = q;
-			}
-		});
-
-		if (isQuote(savedQuote)) {
-			return savedQuote;
-		}
-
-		return (await loadQuote()) ?? nextQuote;
-	}
-
-	const quote = getQuote();
+	loadQuote().then(next => {
+		cachedQuote.value = next;
+	});
 </script>
 
 {#await quote then quote}
-	{#if quote}
-		<figure>
-			<blockquote class="max-w-prose">
-				{quote.content}
-			</blockquote>
-			<figcaption>
-				{#if tweaks.value.bulletPoints}
-					&mdash;
-				{:else}
-					-
-				{/if}
-				<cite>
-					{#if isWebUrl(quote.author.link)}
-						<a
-							href={quote.author.link}
-							rel="external noopener noreferrer"
-							class="hover:text-accent transition"
-						>
-							{quote.author.name}
-						</a>
-					{:else}
-						{quote.author.name}
-					{/if}
-				</cite>
-			</figcaption>
-		</figure>
-	{/if}
+	<figure>
+		<blockquote class="max-w-prose">
+			{quote.content}
+		</blockquote>
+		<figcaption>
+			{#if tweaks.value.bulletPoints}
+				&mdash;
+			{:else}
+				-
+			{/if}
+			<cite>
+				<a
+					href={quote.link}
+					rel="external noopener noreferrer"
+					class="hover:text-accent transition"
+				>
+					{quote.author}
+				</a>
+			</cite>
+		</figcaption>
+	</figure>
 {/await}
