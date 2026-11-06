@@ -6,6 +6,39 @@
 	import ArrowDown from './icons/ArrowDown.svelte';
 	import ArrowUp from './icons/ArrowUp.svelte';
 	import DeleteIcon from './icons/DeleteIcon.svelte';
+
+	const deleted = $state<{ name: string; restore: () => void }[]>([]);
+	const lastDeleted = $derived(deleted.at(-1));
+
+	function deleteSection(index: number) {
+		const [section] = links.value.splice(index, 1);
+
+		deleted.push({
+			name: section.title || 'untitled section',
+			restore() {
+				links.value.splice(index, 0, section);
+			}
+		});
+	}
+
+	function deleteLink(sectionIndex: number, index: number) {
+		const { id: sectionId, children } = links.value[sectionIndex];
+		const [link] = children.splice(index, 1);
+
+		deleted.push({
+			name: link.name || 'unnamed link',
+			restore() {
+				const section = links.value.find(({ id }) => id === sectionId);
+				if (!section) return;
+
+				section.children.splice(index, 0, link);
+			}
+		});
+	}
+
+	function undoDelete() {
+		deleted.pop()?.restore();
+	}
 </script>
 
 <div>
@@ -22,7 +55,7 @@
 					<button
 						class="hover:text-accent transition"
 						title="move up"
-						on:click={() => {
+						onclick={() => {
 							if (sectionIndex <= 0) return;
 							[
 								links.value[sectionIndex],
@@ -38,7 +71,7 @@
 					<button
 						class="hover:text-accent transition"
 						title="move down"
-						on:click={() => {
+						onclick={() => {
 							if (sectionIndex >= links.value.length - 1) return;
 							[
 								links.value[sectionIndex],
@@ -54,9 +87,7 @@
 					<button
 						class="hover:text-red-400 transition"
 						title="delete"
-						on:click={() => {
-							links.value.splice(sectionIndex, 1);
-						}}
+						onclick={() => deleteSection(sectionIndex)}
 					>
 						<DeleteIcon />
 					</button>
@@ -81,7 +112,7 @@
 							<button
 								class="hover:text-accent transition"
 								title="move up"
-								on:click={() => {
+								onclick={() => {
 									if (linkIndex <= 0) return;
 									[
 										section.children[linkIndex],
@@ -97,7 +128,7 @@
 							<button
 								class="hover:text-accent transition"
 								title="move down"
-								on:click={() => {
+								onclick={() => {
 									if (
 										linkIndex >=
 										section.children.length - 1
@@ -119,9 +150,8 @@
 							<button
 								class="hover:text-red-400 transition"
 								title="delete"
-								on:click={() => {
-									section.children.splice(linkIndex, 1);
-								}}
+								onclick={() =>
+									deleteLink(sectionIndex, linkIndex)}
 							>
 								<DeleteIcon />
 							</button>
@@ -159,4 +189,15 @@
 			+ section
 		</Button>
 	</p>
+
+	{#if lastDeleted}
+		<div
+			class="sticky -bottom-8 -mb-2 py-2 flex items-center gap-2 bg-background"
+			role="status"
+		>
+			<p class="min-w-0 truncate">Deleted {lastDeleted.name}.</p>
+
+			<Button class="shrink-0" on:click={undoDelete}>undo</Button>
+		</div>
+	{/if}
 </div>
