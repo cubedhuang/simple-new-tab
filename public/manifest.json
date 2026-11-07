@@ -13,6 +13,11 @@
 		"512": "icon512.png"
 	},
 	"author": "cubedhuang",
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "{9e62c55d-a979-4e99-9cce-8ee030c11274}"
+		}
+	},
 	"chrome_url_overrides": {
 		"newtab": "index.html"
 	}
