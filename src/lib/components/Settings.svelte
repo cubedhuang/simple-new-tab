@@ -444,6 +444,7 @@
 						<Button
 							on:click={() => {
 								localStorage.clear();
+								sessionStorage.clear();
 								location.reload();
 							}}
 						>
