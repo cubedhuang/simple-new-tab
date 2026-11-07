@@ -3,10 +3,18 @@ export interface Theme {
 	colors: Record<'background' | 'unfocused' | 'accent' | 'body', string>;
 }
 
-// converted from each theme's published hex palette
 export const themes: Theme[] = [
 	{
 		name: 'Default',
+		colors: {
+			background: 'oklch(0.215 0.018 310)',
+			unfocused: 'oklch(0.185 0.016 310)',
+			accent: 'oklch(0.82 0.075 350)',
+			body: 'oklch(0.82 0.012 310)'
+		}
+	},
+	{
+		name: 'Classic',
 		colors: {
 			background: 'oklch(0.191 0.029 315.1)',
 			unfocused: 'oklch(0.235 0 0)',
@@ -15,21 +23,31 @@ export const themes: Theme[] = [
 		}
 	},
 	{
+		name: 'Clay',
+		colors: {
+			background: 'oklch(0.215 0.008 60)',
+			unfocused: 'oklch(0.185 0.007 60)',
+			accent: 'oklch(0.78 0.105 45)',
+			body: 'oklch(0.82 0.012 80)'
+		}
+	},
+	{
+		name: 'Sage',
+		colors: {
+			background: 'oklch(0.215 0.012 175)',
+			unfocused: 'oklch(0.185 0.011 175)',
+			accent: 'oklch(0.82 0.085 155)',
+			body: 'oklch(0.82 0.012 150)'
+		}
+	},
+	// the rest are converted from each theme's published hex palette
+	{
 		name: 'GitHub Dark',
 		colors: {
 			background: 'oklch(0.176 0.014 258.4)',
 			unfocused: 'oklch(0.104 0.019 248.3)',
 			accent: 'oklch(0.715 0.152 253.3)',
 			body: 'oklch(0.943 0.011 243.7)'
-		}
-	},
-	{
-		name: 'Dark Modern',
-		colors: {
-			background: 'oklch(0.239 0 0)',
-			unfocused: 'oklch(0.209 0 0)',
-			accent: 'oklch(0.718 0.149 248.2)',
-			body: 'oklch(0.845 0 0)'
 		}
 	},
 	{

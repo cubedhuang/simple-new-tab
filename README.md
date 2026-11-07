@@ -12,7 +12,7 @@ A minimalistic, configurable new tab page. Works with Chromium-based browsers an
 - Minimalistic design.
 - Easy to configure.
   ![Screenshot](docs/settings.png)
-- Organized your links into sections and columns.
+- Organize your links into sections and columns.
   ![Screenshot](docs/links.png)
 - Use a preset theme or craft your own.
   ![Screenshot](docs/colors.png)

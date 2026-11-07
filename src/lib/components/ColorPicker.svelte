@@ -118,7 +118,7 @@
 	{/each}
 
 	<Text
-		placeholder="#19101d or oklch(0.19 0.03 315)"
+		placeholder="#1c1720 or oklch(0.215 0.018 310)"
 		bind:value={text}
 		on:input={setText}
 	/>
