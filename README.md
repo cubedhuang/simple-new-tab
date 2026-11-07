@@ -5,19 +5,25 @@ A minimalistic, configurable new tab page. Works with Chromium-based browsers an
 - [Chrome Extension](https://chrome.google.com/webstore/detail/simple-new-tab/knjgndjhindbbphlfnaagilhcjciehaf)
 - [Firefox Add-on](https://addons.mozilla.org/en-US/firefox/addon/minimalistic-new-tab/)
 
-![Screenshot](https://cdn.dan.onl/22/09/04579--2022-09-30--01-26-33.png)
+![Screenshot](docs/main.png)
 
 ## Features
 
 - Minimalistic design.
 - Easy to configure.
-  ![Screenshot](https://cdn.dan.onl/22/09/04580--2022-09-30--01-29-59.png)
+  ![Screenshot](docs/settings.png)
+- Organized your links into sections and columns.
+  ![Screenshot](docs/links.png)
+- Use a preset theme or craft your own.
+  ![Screenshot](docs/colors.png)
 - A new quote every time you open a new tab.
 - Clock with the current local time.
 - Weather information in your area, powered by [OpenWeather](https://openweathermap.org/).
+- Stats on how many tabs you've opened.
 - Your Discord status at a glance.
+- Show or hide anything you don't need.
 - Import and export your settings.
-  ![Screenshot](https://cdn.dan.onl/22/09/04581--2022-09-30--01-33-03.png)
+  ![Screenshot](docs/import-export.png)
 
 ## Build
 
