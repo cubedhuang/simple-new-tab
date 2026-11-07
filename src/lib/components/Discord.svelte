@@ -28,4 +28,9 @@
 			</div>
 		{/each}
 	</div>
+{:else if lanyard.error}
+	<div>
+		<h2>Discord</h2>
+		<p>{lanyard.error}</p>
+	</div>
 {/if}

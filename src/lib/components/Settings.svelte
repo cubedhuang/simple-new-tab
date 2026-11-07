@@ -364,39 +364,52 @@
 					can generate and use a free key.
 				</p>
 
-				<p class="mt-1">
-					<Password
-						placeholder="weather api key"
-						bind:value={weatherKey.value}
-					/>
-				</p>
+				{#if !tweaks.value.hideWeather}
+					<p class="mt-1">
+						<Password
+							placeholder="weather api key"
+							bind:value={weatherKey.value}
+						/>
+					</p>
+				{/if}
 
 				<p class="mt-1 flex flex-wrap gap-1">
 					<Button
 						on:click={() => {
-							weatherUnits.value =
-								weatherUnits.value === 'metric'
-									? 'imperial'
-									: 'metric';
+							tweaks.value.hideWeather =
+								!tweaks.value.hideWeather;
 						}}
 					>
-						{weatherUnits.value === 'metric'
-							? 'Metric'
-							: 'Imperial'} Units
+						Weather {tweaks.value.hideWeather ? 'Hidden' : 'Shown'}
 					</Button>
 
-					<Button
-						on:click={() => {
-							weatherLayout.value =
-								weatherLayout.value === 'compact'
-									? 'detailed'
-									: 'compact';
-						}}
-					>
-						{weatherLayout.value === 'compact'
-							? 'Compact'
-							: 'Detailed'} Layout
-					</Button>
+					{#if !tweaks.value.hideWeather}
+						<Button
+							on:click={() => {
+								weatherUnits.value =
+									weatherUnits.value === 'metric'
+										? 'imperial'
+										: 'metric';
+							}}
+						>
+							{weatherUnits.value === 'metric'
+								? 'Metric'
+								: 'Imperial'} Units
+						</Button>
+
+						<Button
+							on:click={() => {
+								weatherLayout.value =
+									weatherLayout.value === 'compact'
+										? 'detailed'
+										: 'compact';
+							}}
+						>
+							{weatherLayout.value === 'compact'
+								? 'Compact'
+								: 'Detailed'} Layout
+						</Button>
+					{/if}
 				</p>
 			</div>
 
@@ -414,11 +427,24 @@
 					>.
 				</p>
 
+				{#if !tweaks.value.hideDiscord}
+					<p class="mt-1">
+						<Text
+							placeholder="discord user id"
+							bind:value={discordId.value}
+						/>
+					</p>
+				{/if}
+
 				<p class="mt-1">
-					<Text
-						placeholder="discord user id"
-						bind:value={discordId.value}
-					/>
+					<Button
+						on:click={() => {
+							tweaks.value.hideDiscord =
+								!tweaks.value.hideDiscord;
+						}}
+					>
+						Discord {tweaks.value.hideDiscord ? 'Hidden' : 'Shown'}
+					</Button>
 				</p>
 			</div>
 

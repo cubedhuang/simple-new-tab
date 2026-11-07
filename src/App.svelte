@@ -46,7 +46,9 @@
 			<Clock />
 		{/if}
 
-		<Weather />
+		{#if !tweaks.value.hideWeather}
+			<Weather />
+		{/if}
 
 		{#if !tweaks.value.hideTabCount}
 			<TabStats />

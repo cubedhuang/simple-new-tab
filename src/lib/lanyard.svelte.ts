@@ -1,4 +1,4 @@
-import { discordId } from './stores.svelte';
+import { discordId, tweaks } from './stores.svelte';
 import type { LanyardData, LanyardResponse } from './types';
 
 function fetchLanyard(discordId: string) {
@@ -7,21 +7,41 @@ function fetchLanyard(discordId: string) {
 	) as Promise<LanyardResponse>;
 }
 
-export const lanyard = $state<{ data?: LanyardData }>({});
+export const lanyard = $state<{ data?: LanyardData; error?: string }>({});
 
 $effect.root(() => {
 	$effect(() => {
-		const id = discordId.value;
+		// hidden means no polling, not just no widget
+		const id = tweaks.value.hideDiscord ? '' : discordId.value;
+
+		lanyard.data = undefined;
+		lanyard.error = undefined;
 
 		if (!id) return;
 
+		let stale = false;
+
 		async function update() {
-			const res = await fetchLanyard(id);
+			let res: LanyardResponse;
+
+			try {
+				res = await fetchLanyard(id);
+			} catch {
+				if (!stale) lanyard.error = "Couldn't reach Lanyard.";
+				return;
+			}
+
+			if (stale) return;
 
 			if (res.success) {
 				lanyard.data = res.data;
+				lanyard.error = undefined;
 			} else {
-				console.error("Couldn't fetch Lanyard data:", res.error);
+				lanyard.data = undefined;
+				lanyard.error =
+					res.error.code === 'user_not_monitored'
+						? "Lanyard can't find this user. Check your ID and make sure you're in the Lanyard Discord server."
+						: res.error.message;
 			}
 		}
 
@@ -29,6 +49,9 @@ $effect.root(() => {
 
 		const interval = setInterval(update, 5000);
 
-		return () => clearInterval(interval);
+		return () => {
+			stale = true;
+			clearInterval(interval);
+		};
 	});
 });

@@ -57,7 +57,9 @@ export const tweaks = new Stored('tweaks', {
 	hideTabCount: false,
 	capitalizedTitle: false,
 	bulletPoints: false,
-	boldHeadings: false
+	boldHeadings: false,
+	hideWeather: false,
+	hideDiscord: false
 });
 
 globalEffect(() => {
