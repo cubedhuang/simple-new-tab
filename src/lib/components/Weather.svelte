@@ -63,8 +63,36 @@
 
 	function getPosition() {
 		return new Promise<GeolocationPosition>((resolve, reject) => {
-			navigator.geolocation.getCurrentPosition(resolve, reject);
+			navigator.geolocation.getCurrentPosition(resolve, error => {
+				reject(
+					new Error(
+						error.code === error.PERMISSION_DENIED
+							? 'Allow location access to see the weather.'
+							: "Couldn't get your location."
+					)
+				);
+			});
 		});
+	}
+
+	async function fetchCurrentWeather(url: string): Promise<WeatherData> {
+		const res = await fetch(url).catch(() => {
+			throw new Error("Couldn't reach OpenWeather.");
+		});
+
+		if (res.status === 401) {
+			throw new Error(
+				'OpenWeather rejected your API key. Is the key correct?'
+			);
+		}
+		if (res.status === 429) {
+			throw new Error('Too many requests for this OpenWeather API key.');
+		}
+		if (!res.ok) {
+			throw new Error(`OpenWeather returned an error (${res.status}).`);
+		}
+
+		return res.json();
 	}
 
 	async function fetchJson<T>(url: string): Promise<T | null> {
@@ -108,16 +136,14 @@
 		const query = `units=imperial&appid=${key}&lat=${lat}&lon=${long}`;
 
 		const [weatherData, forecast] = await Promise.all([
-			fetchJson<WeatherData>(`${api}/weather?${query}`),
+			fetchCurrentWeather(`${api}/weather?${query}`),
 			fetchJson<Forecast>(`${api}/forecast?${query}&cnt=8`)
 		]);
 
-		if (weatherData) {
-			weatherData.next24h = getNext24h(weatherData.main.temp, forecast);
+		weatherData.next24h = getNext24h(weatherData.main.temp, forecast);
 
-			localStorage.setItem('weatherData', JSON.stringify(weatherData));
-			localStorage.setItem('weatherDataTime', `${Date.now()}`);
-		}
+		localStorage.setItem('weatherData', JSON.stringify(weatherData));
+		localStorage.setItem('weatherDataTime', `${Date.now()}`);
 
 		return weatherData;
 	}
@@ -186,4 +212,9 @@
 			</div>
 		</div>
 	{/if}
+{:catch error}
+	<div>
+		<h2>Weather</h2>
+		<p>{error.message}</p>
+	</div>
 {/await}
