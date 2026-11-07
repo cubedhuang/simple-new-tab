@@ -85,9 +85,16 @@ export const colors = new Stored<Record<string, string>>('colors', {
 });
 
 globalEffect(() => {
+	const root = document.documentElement;
+	root.classList.add('no-transitions');
+
 	for (const [key, value] of Object.entries(colors.value)) {
-		document.documentElement.style.setProperty(`--${key}`, value);
+		root.style.setProperty(`--${key}`, value);
 	}
+
+	// force a reflow c:
+	void document.body.offsetWidth;
+	root.classList.remove('no-transitions');
 
 	setFavicon(colors.value);
 
@@ -102,7 +109,15 @@ globalEffect(() => {
 });
 
 export function applyTheme(theme: Theme) {
-	colors.value = { ...theme.colors };
+	const update = () => (colors.value = { ...theme.colors });
+	if (
+		!document.startViewTransition ||
+		matchMedia('(prefers-reduced-motion: reduce)').matches
+	) {
+		update();
+		return;
+	}
+	document.startViewTransition(update);
 }
 
 export const presetFonts = [

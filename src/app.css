@@ -43,6 +43,12 @@ body {
 		@apply outline-hidden focus-visible:outline-2 focus-visible:outline-solid outline-accent outline-offset-2;
 	}
 
+	.no-transitions *,
+	.no-transitions *::before,
+	.no-transitions *::after {
+		transition: none !important;
+	}
+
 	button:not(:disabled) {
 		cursor: pointer;
 	}
