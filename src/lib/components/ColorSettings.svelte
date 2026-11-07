@@ -20,9 +20,9 @@
 		{@const active = isActive(theme)}
 		<button
 			type="button"
-			class="flex items-center gap-2 px-2 py-0.5 rounded-lg border-2 border-current/10 outline-accent outline-offset-2 focus-visible:outline-2"
-			class:ring-2={active}
-			class:ring-accent={active}
+			class="flex items-center gap-2 px-2 py-0.5 rounded-lg border-2 {active
+				? 'border-accent'
+				: 'border-current/10'}"
 			style:background={theme.colors.background}
 			style:color={theme.colors.body}
 			aria-pressed={active}
@@ -41,7 +41,7 @@
 	{#each Object.keys(colors.value) as name}
 		<button
 			type="button"
-			class="flex bg-control cursor-pointer rounded-lg border-2 border-current/10 hover:text-accent transition-colors focus:text-accent focus:outline-hidden"
+			class="flex bg-control cursor-pointer rounded-lg border-2 border-current/10 hover:text-accent transition-colors focus:text-accent"
 			class:text-accent={editing === name}
 			aria-expanded={editing === name}
 			onclick={() => {

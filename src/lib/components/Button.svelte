@@ -8,7 +8,7 @@
 
 <button
 	{type}
-	class="px-2 py-0.5 bg-control border-2 border-current/10 hover:text-accent focus:text-accent focus:outline-hidden transition-colors rounded-lg {className}"
+	class="px-2 py-0.5 bg-control border-2 border-current/10 hover:text-accent focus:text-accent transition-colors rounded-lg {className}"
 	on:click
 >
 	<slot />

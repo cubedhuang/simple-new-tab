@@ -39,6 +39,10 @@ body {
 		font-display: swap;
 	}
 
+	* {
+		@apply outline-hidden focus-visible:outline-2 focus-visible:outline-solid outline-accent outline-offset-2;
+	}
+
 	button:not(:disabled) {
 		cursor: pointer;
 	}
