@@ -1,5 +1,7 @@
 quotes.json is from the Quotable dataset: https://github.com/quotable-io/data (as of 2026-11-5)
-removed four duplicate quotes, added each author's link to the quote, and removed IDs.
+removed 58 duplicate or reworded quotes and 2 inappropriate quotes, added each author's link to
+the quote, removed IDs, fixed typos and punctuation, standardized author names, apostrophes, and
+dashes, and filled in missing tags.
 
 Copyright © 2019 Luke Peavey
 

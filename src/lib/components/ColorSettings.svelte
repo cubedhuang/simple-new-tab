@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { isSameColor } from '../oklch';
-	import { applyTheme, colors, resetColors } from '../stores.svelte';
+	import { applyTheme, colors } from '../stores.svelte';
 	import { themes, type Theme } from '../themes';
 
-	import Button from './Button.svelte';
 	import ColorPicker from './ColorPicker.svelte';
 
 	let editing = $state<string | null>(null);
@@ -58,8 +57,6 @@
 			</span>
 		</button>
 	{/each}
-
-	<Button on:click={resetColors}>reset colors</Button>
 </div>
 
 {#if editing && colors.value[editing] !== undefined}

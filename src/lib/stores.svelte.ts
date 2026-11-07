@@ -65,10 +65,8 @@ globalEffect(() => {
 	);
 });
 
-const initialColors = themes[0].colors;
-
 export const colors = new Stored<Record<string, string>>('colors', {
-	...initialColors
+	...themes[0].colors
 });
 
 globalEffect(() => {
@@ -90,10 +88,6 @@ globalEffect(() => {
 
 export function applyTheme(theme: Theme) {
 	colors.value = { ...theme.colors };
-}
-
-export function resetColors() {
-	colors.value = { ...initialColors };
 }
 
 export const presetFonts = [
@@ -193,6 +187,32 @@ export const links = new Stored<LinkSection[]>('links', [
 			}
 		]
 	}
+]);
+
+export const defaultQuoteTags = [
+	'Future',
+	'Technology',
+	'Science',
+	'Time',
+	'Change',
+	'Philosophy',
+	'History',
+	'Knowledge',
+	'Imagination',
+	'Creativity',
+	'Mathematics',
+	'Genius',
+	'Nature',
+	'Truth',
+	'Education',
+	'Literature',
+	'Opportunity',
+	'Humorous',
+	'Life'
+];
+
+export const quoteTags = new Stored<string[]>('quote-tags', [
+	...defaultQuoteTags
 ]);
 
 export const discordId = new Stored('discordId', '');

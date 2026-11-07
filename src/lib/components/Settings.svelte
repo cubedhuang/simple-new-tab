@@ -9,6 +9,7 @@
 		fontSize,
 		links,
 		presetFonts,
+		quoteTags,
 		tweaks,
 		weatherKey,
 		weatherLayout,
@@ -18,6 +19,7 @@
 	import Button from './Button.svelte';
 	import ColorSettings from './ColorSettings.svelte';
 	import Password from './Password.svelte';
+	import QuoteSettings from './QuoteSettings.svelte';
 	import Text from './Text.svelte';
 	import SettingsLinks from './SettingsLinks.svelte';
 	import Number from './Number.svelte';
@@ -83,6 +85,7 @@
 			colors: colors.value,
 			clock: clock.value,
 			links: links.value,
+			quoteTags: quoteTags.value,
 			weatherKey: weatherKey.value,
 			weatherUnits: weatherUnits.value,
 			weatherLayout: weatherLayout.value,
@@ -113,7 +116,8 @@
 			typeof data !== 'object' ||
 			data === null ||
 			Array.isArray(data) ||
-			(data.links && !Array.isArray(data.links))
+			(data.links && !Array.isArray(data.links)) ||
+			(data.quoteTags && !Array.isArray(data.quoteTags))
 		) {
 			importMessage = "That doesn't look like exported settings.";
 			return;
@@ -125,6 +129,7 @@
 		if (data.colors) colors.value = data.colors;
 		if (data.clock) clock.value = data.clock;
 		if (data.links) links.value = data.links;
+		if (data.quoteTags) quoteTags.value = data.quoteTags;
 		if (data.weatherKey) weatherKey.value = data.weatherKey;
 		if (data.weatherUnits) weatherUnits.value = data.weatherUnits;
 		if (data.weatherLayout) weatherLayout.value = data.weatherLayout;
@@ -234,9 +239,7 @@
 								on:click={() => {
 									font.value = name;
 								}}
-								class={name === font.value
-									? 'bg-accent! text-background!'
-									: ''}
+								pressed={name === font.value}
 							>
 								{name}
 							</Button>
@@ -338,6 +341,8 @@
 					</Button>
 				</p>
 			</div>
+
+			<QuoteSettings />
 
 			<SettingsLinks />
 
