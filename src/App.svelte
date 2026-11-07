@@ -5,6 +5,7 @@
 	import Quote from './lib/components/Quote.svelte';
 	import Settings from './lib/components/Settings.svelte';
 	import SettingsIcon from './lib/components/icons/SettingsIcon.svelte';
+	import TabStats from './lib/components/TabStats.svelte';
 	import Weather from './lib/components/Weather.svelte';
 	import { clock, tweaks } from './lib/stores.svelte';
 
@@ -54,6 +55,11 @@
 		{/if}
 
 		<Weather />
+
+		{#if !tweaks.value.hideTabCount}
+			<TabStats />
+		{/if}
+
 		<Discord />
 	</div>
 

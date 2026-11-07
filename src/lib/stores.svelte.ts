@@ -28,8 +28,31 @@ export class Stored<T> {
 	}
 }
 
+/** "YYYY-MM-DD" */
+export function dayKey(date: Date) {
+	const month = `${date.getMonth() + 1}`.padStart(2, '0');
+	const day = `${date.getDate()}`.padStart(2, '0');
+	return `${date.getFullYear()}-${month}-${day}`;
+}
+
+export const tabHistory = new Stored<Record<string, number>>('tab-history', {});
+
+// we do this in this file so that it's a single execution and doesn't depend on whether the stats are shown
+const today = dayKey(new Date());
+const [navigation] = performance.getEntriesByType(
+	'navigation'
+) as PerformanceNavigationTiming[];
+
+if (tabHistory.value[today] === undefined) {
+	tabHistory.value[today] = 1;
+} else if (navigation?.type === 'navigate') {
+	// this excludes reloads and going back to this page
+	tabHistory.value[today]++;
+}
+
 export const tweaks = new Stored('tweaks', {
 	hideQuote: false,
+	hideTabCount: false,
 	capitalizedTitle: false,
 	bulletPoints: false,
 	boldHeadings: false

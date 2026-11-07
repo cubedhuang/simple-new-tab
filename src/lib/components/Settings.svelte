@@ -180,6 +180,16 @@
 
 					<Button
 						on:click={() => {
+							tweaks.value.hideTabCount =
+								!tweaks.value.hideTabCount;
+						}}
+					>
+						Tab Stats
+						{tweaks.value.hideTabCount ? 'Hidden' : 'Shown'}
+					</Button>
+
+					<Button
+						on:click={() => {
 							tweaks.value.bulletPoints =
 								!tweaks.value.bulletPoints;
 						}}
