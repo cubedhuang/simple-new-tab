@@ -98,14 +98,14 @@
 
 	function formatTemperature(fahrenheit: number) {
 		return weatherUnits.value === 'metric'
-			? `${(((fahrenheit - 32) * 5) / 9).toFixed(2)}°C`
-			: `${fahrenheit.toFixed(2)}°F`;
+			? `${Math.round(((fahrenheit - 32) * 5) / 9)}°C`
+			: `${Math.round(fahrenheit)}°F`;
 	}
 
 	function formatSpeed(mph: number) {
 		return weatherUnits.value === 'metric'
-			? `${(mph * 1.609344).toFixed(2)} km/h`
-			: `${mph.toFixed(2)} mph`;
+			? `${Math.round(mph * 1.609344)} km/h`
+			: `${Math.round(mph)} mph`;
 	}
 </script>
 
