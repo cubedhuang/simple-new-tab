@@ -9,13 +9,13 @@
 		fontSize,
 		links,
 		presetFonts,
-		resetColors,
 		tweaks,
 		weatherKey,
 		weatherUnits
 	} from '../stores.svelte';
 
 	import Button from './Button.svelte';
+	import ColorSettings from './ColorSettings.svelte';
 	import Password from './Password.svelte';
 	import Text from './Text.svelte';
 	import SettingsLinks from './SettingsLinks.svelte';
@@ -256,30 +256,7 @@
 			<div>
 				<h3>colors</h3>
 
-				<div class="mt-2 flex flex-wrap gap-2">
-					{#each Object.keys(colors.value) as name}
-						<label
-							class="flex items-center bg-black/30 cursor-pointer rounded-lg hover:text-accent transition-colors focus-within:text-accent"
-						>
-							<span
-								class="h-full w-4 rounded-l-lg border-2 border-gray-600/30"
-								style:background={colors.value[name]}
-							></span>
-
-							<span class="px-2 py-1">
-								{name}
-							</span>
-
-							<input
-								type="color"
-								class="sr-only self-end"
-								bind:value={colors.value[name]}
-							/>
-						</label>
-					{/each}
-
-					<Button on:click={resetColors}>reset colors</Button>
-				</div>
+				<ColorSettings />
 			</div>
 
 			<div>

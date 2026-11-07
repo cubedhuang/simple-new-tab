@@ -1,3 +1,6 @@
+import { parseColor } from './oklch';
+import { themes, type Theme } from './themes';
+
 function globalEffect(fn: () => void) {
 	$effect.root(() => {
 		$effect(fn);
@@ -39,12 +42,7 @@ globalEffect(() => {
 	);
 });
 
-const initialColors = {
-	background: '#19101d',
-	unfocused: '#1e1e1e',
-	accent: '#ffffff',
-	body: '#a5acb6'
-};
+const initialColors = themes[0].colors;
 
 export const colors = new Stored<Record<string, string>>('colors', {
 	...initialColors
@@ -54,7 +52,20 @@ globalEffect(() => {
 	for (const [key, value] of Object.entries(colors.value)) {
 		document.documentElement.style.setProperty(`--${key}`, value);
 	}
+
+	// light background have less darkening than dark backgrounds
+	const background = parseColor(colors.value.background ?? '');
+	document.documentElement.style.setProperty(
+		'--control',
+		background && background.l > 0.7
+			? 'rgb(0 0 0 / 0.08)'
+			: 'rgb(0 0 0 / 0.3)'
+	);
 });
+
+export function applyTheme(theme: Theme) {
+	colors.value = { ...theme.colors };
+}
 
 export function resetColors() {
 	colors.value = { ...initialColors };

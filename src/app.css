@@ -10,6 +10,7 @@
 	--color-unfocused: var(--unfocused);
 	--color-accent: var(--accent);
 	--color-body: var(--body);
+	--color-control: var(--control);
 }
 
 @layer base {
