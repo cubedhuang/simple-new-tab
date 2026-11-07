@@ -18,7 +18,7 @@ A minimalistic, configurable new tab page. Works with Chromium-based browsers an
   ![Screenshot](docs/colors.png)
 - A new quote every time you open a new tab.
 - Clock with the current local time.
-- Weather information in your area, powered by [OpenWeather](https://openweathermap.org/).
+- Weather information in your area, powered by [Open-Meteo](https://open-meteo.com/) and [BigDataCloud](https://www.bigdatacloud.com/).
 - Stats on how many tabs you've opened.
 - Your Discord status at a glance.
 - Show or hide anything you don't need.

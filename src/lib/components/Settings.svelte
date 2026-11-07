@@ -12,14 +12,13 @@
 		presetFonts,
 		quoteTags,
 		tweaks,
-		weatherKey,
 		weatherLayout,
+		weatherPrecise,
 		weatherUnits
 	} from '../stores.svelte';
 
 	import Button from './Button.svelte';
 	import ColorSettings from './ColorSettings.svelte';
-	import Password from './Password.svelte';
 	import QuoteSettings from './QuoteSettings.svelte';
 	import Text from './Text.svelte';
 	import SettingsLinks from './SettingsLinks.svelte';
@@ -88,7 +87,7 @@
 			links: links.value,
 			columns: columns.value,
 			quoteTags: quoteTags.value,
-			weatherKey: weatherKey.value,
+			weatherPrecise: weatherPrecise.value,
 			weatherUnits: weatherUnits.value,
 			weatherLayout: weatherLayout.value,
 			discordId: discordId.value
@@ -100,6 +99,28 @@
 		} catch {
 			exportMessage = 'Failed to copy settings to clipboard.';
 		}
+	}
+
+	let weatherMessage = '';
+
+	function togglePreciseWeather() {
+		weatherMessage = '';
+		if (weatherPrecise.value) {
+			weatherPrecise.value = false;
+			return;
+		}
+		navigator.geolocation.getCurrentPosition(
+			() => {
+				weatherPrecise.value = true;
+			},
+			error => {
+				weatherMessage =
+					error.code === error.PERMISSION_DENIED
+						? 'Allow location access to use your precise location.'
+						: "Couldn't get your location.";
+			},
+			{ maximumAge: 600_000 }
+		);
 	}
 
 	function importFromText() {
@@ -133,7 +154,12 @@
 		if (data.links) links.value = data.links;
 		if (data.columns) columns.value = data.columns;
 		if (data.quoteTags) quoteTags.value = data.quoteTags;
-		if (data.weatherKey) weatherKey.value = data.weatherKey;
+		// older exports have an OpenWeather API key instead, which used the browser's location
+		if (typeof data.weatherPrecise === 'boolean') {
+			weatherPrecise.value = data.weatherPrecise;
+		} else if (data.weatherKey) {
+			weatherPrecise.value = true;
+		}
 		if (data.weatherUnits) weatherUnits.value = data.weatherUnits;
 		if (data.weatherLayout) weatherLayout.value = data.weatherLayout;
 		if (data.discordId) discordId.value = data.discordId;
@@ -353,25 +379,23 @@
 				<h3>weather</h3>
 
 				<p>
-					This page uses the OpenWeather API. If you want the weather
-					feature, get an API key from the
+					This page uses the
 					<a
-						href="https://openweathermap.org/"
+						href="https://open-meteo.com/"
 						class="underline underline-offset-2 hover:text-accent transition-colors"
 					>
-						OpenWeather website</a
-					>. This page only makes a request every 10 minutes, so you
-					can generate and use a free key.
+						Open-Meteo API</a
+					>
+					for weather data and
+					<a
+						href="https://www.bigdatacloud.com/"
+						class="underline underline-offset-2 hover:text-accent transition-colors"
+					>
+						BigDataCloud</a
+					> for location data. Your approximate location comes from your
+					IP address. Turn on precise location to use your browser's location
+					instead.
 				</p>
-
-				{#if !tweaks.value.hideWeather}
-					<p class="mt-1">
-						<Password
-							placeholder="weather api key"
-							bind:value={weatherKey.value}
-						/>
-					</p>
-				{/if}
 
 				<p class="mt-1 flex flex-wrap gap-1">
 					<Button
@@ -384,6 +408,10 @@
 					</Button>
 
 					{#if !tweaks.value.hideWeather}
+						<Button on:click={togglePreciseWeather}>
+							{weatherPrecise.value ? 'Precise' : 'Approximate'} Location
+						</Button>
+
 						<Button
 							on:click={() => {
 								weatherUnits.value =
@@ -411,6 +439,10 @@
 						</Button>
 					{/if}
 				</p>
+
+				{#if weatherMessage}
+					<p class="mt-2" role="status">{weatherMessage}</p>
+				{/if}
 			</div>
 
 			<div>

@@ -26,6 +26,17 @@ export class Stored<T> {
 			storage.setItem(newKey, JSON.stringify(this.value));
 		});
 	}
+
+	static readLegacy(key: string) {
+		const saved =
+			localStorage.getItem(`simple-new-tab:${key}`) ||
+			localStorage.getItem(key);
+		try {
+			return saved && JSON.parse(saved);
+		} catch {
+			return null;
+		}
+	}
 }
 
 /** "YYYY-MM-DD" */
@@ -214,7 +225,23 @@ export const quoteTags = new Stored<string[]>('quote-tags', [
 
 export const discordId = new Stored('discordId', '');
 
-export const weatherKey = new Stored('weatherKey', '');
+// anyone who set a key in the last has already allowed location access
+export const weatherPrecise = new Stored(
+	'weather-precise',
+	!!Stored.readLegacy('weatherKey')
+);
+
+// clean up old localStorage entries
+for (const key of [
+	'simple-new-tab:weatherKey',
+	'weatherKey',
+	'weatherData',
+	'weatherDataTime',
+	'weatherDataKey'
+]) {
+	localStorage.removeItem(key);
+}
+
 export const weatherLayout = new Stored<'compact' | 'detailed'>(
 	'weather-layout',
 	'compact'
