@@ -20,9 +20,9 @@
 		{@const active = isActive(theme)}
 		<button
 			type="button"
-			class="flex items-center gap-2 px-2 py-0.5 rounded-lg border-2 {active
-				? 'border-accent'
-				: 'border-current/10'}"
+			class="flex items-center gap-2 px-2 py-0.5 rounded-lg border-2 border-current/10 {active
+				? 'ring-2 ring-accent ring-offset-background'
+				: ''}"
 			style:background={theme.colors.background}
 			style:color={theme.colors.body}
 			aria-pressed={active}
