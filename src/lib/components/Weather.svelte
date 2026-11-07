@@ -120,9 +120,11 @@
 
 		const cachedWeatherData = localStorage.getItem('weatherData');
 		const cachedWeatherTime = localStorage.getItem('weatherDataTime');
+		const cachedWeatherKey = localStorage.getItem('weatherDataKey');
 
 		if (
 			cachedWeatherData &&
+			cachedWeatherKey === key &&
 			Date.now() - Number(cachedWeatherTime) < 600_000
 		) {
 			return JSON.parse(cachedWeatherData);
@@ -144,6 +146,7 @@
 
 		localStorage.setItem('weatherData', JSON.stringify(weatherData));
 		localStorage.setItem('weatherDataTime', `${Date.now()}`);
+		localStorage.setItem('weatherDataKey', key);
 
 		return weatherData;
 	}
