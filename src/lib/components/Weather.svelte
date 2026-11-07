@@ -82,7 +82,7 @@
 
 		if (res.status === 401) {
 			throw new Error(
-				'OpenWeather rejected your API key. Is the key correct?'
+				'OpenWeather rejected your API key. New keys may take a few hours to activate.'
 			);
 		}
 		if (res.status === 429) {
