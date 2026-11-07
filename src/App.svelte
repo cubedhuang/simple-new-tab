@@ -41,7 +41,7 @@
 		<Links />
 	</div>
 
-	<div class="max-w-96 shrink-0 flow text-right">
+	<div class="ml-auto max-w-96 shrink-0 flow text-right">
 		{#if !clock.value.hidden}
 			<Clock />
 		{/if}
