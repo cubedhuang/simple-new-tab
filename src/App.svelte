@@ -39,14 +39,6 @@
 			<Quote />
 		{/if}
 		<Links />
-
-		<button
-			class="hover:text-accent hover:rotate-[22.5deg] transition"
-			title="open settings"
-			on:click={() => (settingsOpen = true)}
-		>
-			<SettingsIcon />
-		</button>
 	</div>
 
 	<div class="max-w-96 shrink-0 flow text-right">
@@ -61,6 +53,14 @@
 		{/if}
 
 		<Discord />
+
+		<button
+			class="hover:text-accent hover:rotate-[-22.5deg] transition"
+			title="open settings"
+			on:click={() => (settingsOpen = true)}
+		>
+			<SettingsIcon />
+		</button>
 	</div>
 
 	<Settings bind:open={settingsOpen} />
