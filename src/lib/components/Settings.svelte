@@ -7,6 +7,7 @@
 		discordId,
 		font,
 		fontSize,
+		columns,
 		links,
 		presetFonts,
 		quoteTags,
@@ -85,6 +86,7 @@
 			colors: colors.value,
 			clock: clock.value,
 			links: links.value,
+			columns: columns.value,
 			quoteTags: quoteTags.value,
 			weatherKey: weatherKey.value,
 			weatherUnits: weatherUnits.value,
@@ -129,6 +131,7 @@
 		if (data.colors) colors.value = data.colors;
 		if (data.clock) clock.value = data.clock;
 		if (data.links) links.value = data.links;
+		if (data.columns) columns.value = data.columns;
 		if (data.quoteTags) quoteTags.value = data.quoteTags;
 		if (data.weatherKey) weatherKey.value = data.weatherKey;
 		if (data.weatherUnits) weatherUnits.value = data.weatherUnits;

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { links, tweaks } from '../stores.svelte';
+	import { columns, links, tweaks } from '../stores.svelte';
 
 	function normalize(url: string) {
 		const trimmed = url.trim();
@@ -9,9 +9,15 @@
 	}
 </script>
 
-<div class="flow">
+<div
+	class="w-fit gap-x-8"
+	style:columns="{columns.value} 12em"
+	style:max-width={columns.value > 1
+		? `calc(${columns.value} * 24em + ${columns.value - 1} * 2rem)`
+		: null}
+>
 	{#each links.value as { title, children }}
-		<ul>
+		<ul class="mb-6 last:mb-0 break-inside-avoid">
 			<li>
 				<h2>{title}</h2>
 			</li>

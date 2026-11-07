@@ -189,6 +189,8 @@ export const links = new Stored<LinkSection[]>('links', [
 	}
 ]);
 
+export const columns = new Stored('columns', 1);
+
 export const defaultQuoteTags = [
 	'Future',
 	'Technology',

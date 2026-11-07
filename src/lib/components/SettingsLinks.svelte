@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { flip } from 'svelte/animate';
-	import { links, generateId } from '../stores.svelte';
+	import { columns, links, generateId } from '../stores.svelte';
 	import Button from './Button.svelte';
 	import Text from './Text.svelte';
 	import ArrowDown from './icons/ArrowDown.svelte';
@@ -43,6 +43,17 @@
 
 <div>
 	<h3>links</h3>
+
+	<p class="mt-1">
+		<Button
+			on:click={() => {
+				columns.value = (columns.value % 4) + 1;
+			}}
+		>
+			{columns.value}
+			{columns.value === 1 ? 'Column' : 'Columns'}
+		</Button>
+	</p>
 
 	{#each links.value as section, sectionIndex (section.id)}
 		<div animate:flip={{ duration: 300 }} class="mt-2 flex flex-col gap-1">
