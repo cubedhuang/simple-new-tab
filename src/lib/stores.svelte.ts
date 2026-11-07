@@ -11,10 +11,10 @@ function globalEffect(fn: () => void) {
 export class Stored<T> {
 	value = $state() as T;
 
-	constructor(key: string, initialValue: T) {
+	constructor(key: string, initialValue: T, storage: Storage = localStorage) {
 		const newKey = `simple-new-tab:${key}`;
 
-		const saved = localStorage.getItem(newKey) || localStorage.getItem(key);
+		const saved = storage.getItem(newKey) || storage.getItem(key);
 		if (saved) {
 			try {
 				initialValue = JSON.parse(saved);
@@ -23,7 +23,7 @@ export class Stored<T> {
 		this.value = initialValue;
 
 		globalEffect(() => {
-			localStorage.setItem(newKey, JSON.stringify(this.value));
+			storage.setItem(newKey, JSON.stringify(this.value));
 		});
 	}
 }
@@ -43,10 +43,12 @@ const [navigation] = performance.getEntriesByType(
 	'navigation'
 ) as PerformanceNavigationTiming[];
 
+// this excludes reloads and going back to this page
+export const isNewTab = navigation?.type === 'navigate';
+
 if (tabHistory.value[today] === undefined) {
 	tabHistory.value[today] = 1;
-} else if (navigation?.type === 'navigate') {
-	// this excludes reloads and going back to this page
+} else if (isNewTab) {
 	tabHistory.value[today]++;
 }
 
