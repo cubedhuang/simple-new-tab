@@ -11,6 +11,7 @@
 		presetFonts,
 		tweaks,
 		weatherKey,
+		weatherLayout,
 		weatherUnits
 	} from '../stores.svelte';
 
@@ -84,6 +85,7 @@
 			links: links.value,
 			weatherKey: weatherKey.value,
 			weatherUnits: weatherUnits.value,
+			weatherLayout: weatherLayout.value,
 			discordId: discordId.value
 		};
 
@@ -125,6 +127,7 @@
 		if (data.links) links.value = data.links;
 		if (data.weatherKey) weatherKey.value = data.weatherKey;
 		if (data.weatherUnits) weatherUnits.value = data.weatherUnits;
+		if (data.weatherLayout) weatherLayout.value = data.weatherLayout;
 		if (data.discordId) discordId.value = data.discordId;
 
 		customFont = presetFonts.includes(font.value) ? '' : font.value;
@@ -360,7 +363,7 @@
 					/>
 				</p>
 
-				<p class="mt-1">
+				<p class="mt-1 flex flex-wrap gap-1">
 					<Button
 						on:click={() => {
 							weatherUnits.value =
@@ -372,6 +375,19 @@
 						{weatherUnits.value === 'metric'
 							? 'Metric'
 							: 'Imperial'} Units
+					</Button>
+
+					<Button
+						on:click={() => {
+							weatherLayout.value =
+								weatherLayout.value === 'compact'
+									? 'detailed'
+									: 'compact';
+						}}
+					>
+						{weatherLayout.value === 'compact'
+							? 'Compact'
+							: 'Detailed'} Layout
 					</Button>
 				</p>
 			</div>

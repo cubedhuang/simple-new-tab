@@ -76,6 +76,8 @@ globalEffect(() => {
 		document.documentElement.style.setProperty(`--${key}`, value);
 	}
 
+	setFavicon(colors.value);
+
 	// light background have less darkening than dark backgrounds
 	const background = parseColor(colors.value.background ?? '');
 	document.documentElement.style.setProperty(
@@ -196,6 +198,10 @@ export const links = new Stored<LinkSection[]>('links', [
 export const discordId = new Stored('discordId', '');
 
 export const weatherKey = new Stored('weatherKey', '');
+export const weatherLayout = new Stored<'compact' | 'detailed'>(
+	'weather-layout',
+	'compact'
+);
 export const weatherUnits = new Stored<'imperial' | 'metric'>(
 	'weather-units',
 	'imperial'
