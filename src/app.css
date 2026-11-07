@@ -14,8 +14,11 @@
 }
 
 /* The default size for chrome extensions is 75% for some reason. Also this has to go outside of a layer because unlayered styles always take precedence */
-body {
+html {
 	font-size: var(--font-size, 100%);
+}
+body {
+	font-size: 1rem;
 }
 
 @layer base {

@@ -95,27 +95,31 @@
 </script>
 
 <div class="mt-2 max-w-lg p-3 bg-control rounded-lg">
-	{#each sliders as { key, name, max, step, digits, track }}
-		<label class="mb-2 flex items-center gap-3">
-			<span class="w-20 shrink-0">{name}</span>
+	<div
+		class="mb-2 grid grid-cols-[max-content_minmax(0,1fr)_max-content] items-center gap-x-3 gap-y-2"
+	>
+		{#each sliders as { key, name, max, step, digits, track }}
+			<label class="contents">
+				<span>{name}</span>
 
-			<input
-				class="color-slider min-w-0 flex-1"
-				style:--track="linear-gradient(to right, {track})"
-				type="range"
-				min="0"
-				{max}
-				{step}
-				value={channels[key]}
-				aria-label="{label} {name}"
-				oninput={event => setChannel(key, event)}
-			/>
+				<input
+					class="color-slider w-full"
+					style:--track="linear-gradient(to right, {track})"
+					type="range"
+					min="0"
+					{max}
+					{step}
+					value={channels[key]}
+					aria-label="{label} {name}"
+					oninput={event => setChannel(key, event)}
+				/>
 
-			<span class="w-12 shrink-0 text-right tabular-nums">
-				{channels[key].toFixed(digits)}
-			</span>
-		</label>
-	{/each}
+				<span class="min-w-[5ch] text-right tabular-nums">
+					{channels[key].toFixed(digits)}
+				</span>
+			</label>
+		{/each}
+	</div>
 
 	<Text
 		placeholder="#1c1720 or oklch(0.215 0.018 310)"
