@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
 
+	import { resolveLocale } from '../locales';
 	import { clock } from '../stores.svelte';
 
-	const locale = $derived(clock.value.dayFirst ? 'en-GB' : 'en-US');
+	const locale = $derived(resolveLocale(clock.value.locale));
 
 	const df = $derived(
 		new Intl.DateTimeFormat(locale, {
@@ -14,7 +15,7 @@
 		})
 	);
 	const tf = $derived(
-		new Intl.DateTimeFormat('en', {
+		new Intl.DateTimeFormat(locale, {
 			hour: 'numeric',
 			hour12: clock.value.hour12,
 			minute: 'numeric',

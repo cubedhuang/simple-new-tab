@@ -4,6 +4,7 @@
 	import {
 		clock,
 		colors,
+		migrateClock,
 		discordId,
 		font,
 		fontSize,
@@ -13,10 +14,11 @@
 		presetFonts,
 		quoteTags,
 		tweaks,
+		units,
 		weatherLayout,
-		weatherPrecise,
-		weatherUnits
+		weatherLocation
 	} from '../stores.svelte';
+	import { localeOptions } from '../locales';
 
 	import Button from './Button.svelte';
 	import ColorSettings from './ColorSettings.svelte';
@@ -24,6 +26,7 @@
 	import TextInput from './TextInput.svelte';
 	import NumberInput from './NumberInput.svelte';
 	import Select from './Select.svelte';
+	import WeatherSettings from './WeatherSettings.svelte';
 
 	export let open = true;
 	export let oneditlinks: () => void;
@@ -94,8 +97,8 @@
 			clock: clock.value,
 			linkColumns: linkColumns.value,
 			quoteTags: quoteTags.value,
-			weatherPrecise: weatherPrecise.value,
-			weatherUnits: weatherUnits.value,
+			weatherLocation: weatherLocation.value,
+			units: units.value,
 			weatherLayout: weatherLayout.value,
 			discordId: discordId.value
 		};
@@ -140,28 +143,6 @@
 		}
 	}
 
-	let weatherMessage = '';
-
-	function togglePreciseWeather() {
-		weatherMessage = '';
-		if (weatherPrecise.value) {
-			weatherPrecise.value = false;
-			return;
-		}
-		navigator.geolocation.getCurrentPosition(
-			() => {
-				weatherPrecise.value = true;
-			},
-			error => {
-				weatherMessage =
-					error.code === error.PERMISSION_DENIED
-						? 'Allow location access to use your precise location.'
-						: "Couldn't get your location.";
-			},
-			{ maximumAge: 600_000 }
-		);
-	}
-
 	function importFromText() {
 		if (!importSettings) return;
 
@@ -203,20 +184,31 @@
 		if (data.font) font.value = data.font;
 		if (data.fontSize) fontSize.value = data.fontSize;
 		if (data.colors) colors.value = data.colors;
-		if (data.clock) clock.value = data.clock;
+		if (data.clock) clock.value = migrateClock(data.clock);
 		if (data.linkColumns) {
 			linkColumns.value = data.linkColumns;
 		} else if (data.links) {
 			linkColumns.value = splitIntoColumns(data.links, data.columns ?? 1);
 		}
 		if (data.quoteTags) quoteTags.value = data.quoteTags;
-		// older exports have an OpenWeather API key instead, which used the browser's location
-		if (typeof data.weatherPrecise === 'boolean') {
-			weatherPrecise.value = data.weatherPrecise;
+		if (data.weatherLocation?.mode) {
+			weatherLocation.value = data.weatherLocation;
 		} else if (data.weatherKey) {
-			weatherPrecise.value = true;
+			// older exports have an OpenWeather API key instead, which used the browser's location
+			weatherLocation.value = {
+				mode: data.weatherKey ? 'precise' : 'approximate',
+				place: null
+			};
 		}
-		if (data.weatherUnits) weatherUnits.value = data.weatherUnits;
+		if (data.units) {
+			units.value = data.units;
+		} else if (data.weatherUnits) {
+			units.value = {
+				temperature:
+					data.weatherUnits === 'metric' ? 'celsius' : 'fahrenheit',
+				speed: data.weatherUnits === 'metric' ? 'kmh' : 'mph'
+			};
+		}
 		if (data.weatherLayout) weatherLayout.value = data.weatherLayout;
 		if (data.discordId) discordId.value = data.discordId;
 
@@ -420,12 +412,9 @@
 						/>
 
 						<Select
-							label="Date Order"
-							bind:value={clock.value.dayFirst}
-							options={[
-								{ value: false, label: 'Month First' },
-								{ value: true, label: 'Day First' }
-							]}
+							label="Locale"
+							bind:value={clock.value.locale}
+							options={localeOptions(clock.value.locale)}
 						/>
 
 						<Select
@@ -442,75 +431,7 @@
 
 			<QuoteSettings />
 
-			<div>
-				<h3>weather</h3>
-
-				<p>
-					This page uses the
-					<a
-						href="https://open-meteo.com/"
-						class="underline underline-offset-2 hover:text-accent transition-colors"
-					>
-						Open-Meteo API</a
-					>
-					for weather data and
-					<a
-						href="https://www.bigdatacloud.com/"
-						class="underline underline-offset-2 hover:text-accent transition-colors"
-					>
-						BigDataCloud</a
-					> for location data. Your approximate location comes from your
-					IP address. Turn on precise location to use your browser's location
-					instead.
-				</p>
-
-				<p class="mt-1 flex flex-wrap gap-1">
-					<Button
-						pressed={!tweaks.value.hideWeather}
-						on:click={() => {
-							tweaks.value.hideWeather =
-								!tweaks.value.hideWeather;
-						}}
-					>
-						Show Weather
-					</Button>
-
-					{#if !tweaks.value.hideWeather}
-						<Button
-							pressed={weatherPrecise.value}
-							on:click={togglePreciseWeather}
-						>
-							Precise Location
-						</Button>
-					{/if}
-				</p>
-
-				{#if !tweaks.value.hideWeather}
-					<div class="mt-2 flex flex-wrap gap-x-4 gap-y-2">
-						<Select
-							label="Units"
-							bind:value={weatherUnits.value}
-							options={[
-								{ value: 'imperial', label: 'Imperial' },
-								{ value: 'metric', label: 'Metric' }
-							]}
-						/>
-
-						<Select
-							label="Layout"
-							bind:value={weatherLayout.value}
-							options={[
-								{ value: 'compact', label: 'Compact' },
-								{ value: 'detailed', label: 'Detailed' }
-							]}
-						/>
-					</div>
-				{/if}
-
-				{#if weatherMessage}
-					<p class="mt-2" role="status">{weatherMessage}</p>
-				{/if}
-			</div>
+			<WeatherSettings />
 
 			<div>
 				<h3>discord</h3>

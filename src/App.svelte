@@ -82,7 +82,9 @@
 				aria-pressed={editingLinks}
 				on:click={() => setEditingLinks(!editingLinks)}
 			>
-				<span class="block transition {editingLinks ? '-rotate-45' : ''}">
+				<span
+					class="block transition {editingLinks ? '-rotate-45' : ''}"
+				>
 					<EditIcon />
 				</span>
 			</button>

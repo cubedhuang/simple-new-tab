@@ -1,8 +1,9 @@
 <script lang="ts">
 	import {
+		units,
 		weatherLayout,
-		weatherPrecise,
-		weatherUnits
+		weatherLocation,
+		type WeatherLocation
 	} from '../stores.svelte';
 
 	// temperatures in fahrenheit and speeds in mph
@@ -195,8 +196,14 @@
 		};
 	}
 
-	async function fetchPlace(precise: boolean) {
-		if (!precise) {
+	async function fetchPlace(location: WeatherLocation) {
+		if (location.mode === 'manual') {
+			if (!location.place) throw new Error('Choose a city in settings.');
+			const { lat, lon, name } = location.place;
+			return { lat, lon, name: Promise.resolve(name) };
+		}
+
+		if (location.mode === 'approximate') {
 			const place = await fetchApproximatePlace();
 			return { ...place, name: Promise.resolve(place.name) };
 		}
@@ -206,21 +213,30 @@
 		return { lat, lon, name: fetchPlaceName(lat, lon) };
 	}
 
-	async function fetchWeatherData(precise: boolean): Promise<WeatherData> {
+	async function fetchWeatherData(
+		location: WeatherLocation
+	): Promise<WeatherData> {
+		// a manual place's weather is only reusable for that same place
+		const key = JSON.stringify(
+			location.mode === 'manual'
+				? [location.mode, location.place?.lat, location.place?.lon]
+				: [location.mode]
+		);
+
 		const cached = readJson<{
 			time: number;
-			precise: boolean;
+			key: string;
 			data: WeatherData;
 		}>(cacheKey);
 		if (
 			cached &&
-			cached.precise === precise &&
+			cached.key === key &&
 			Date.now() - cached.time < 600_000
 		) {
 			return cached.data;
 		}
 
-		const place = await fetchPlace(precise);
+		const place = await fetchPlace(location);
 		const [forecast, name] = await Promise.all([
 			fetchForecast(place.lat, place.lon),
 			place.name
@@ -240,29 +256,36 @@
 
 		localStorage.setItem(
 			cacheKey,
-			JSON.stringify({ time: Date.now(), precise, data })
+			JSON.stringify({ time: Date.now(), key, data })
 		);
 
 		return data;
 	}
 
-	const data = $derived(fetchWeatherData(weatherPrecise.value));
+	const data = $derived(
+		fetchWeatherData($state.snapshot(weatherLocation.value))
+	);
 
 	function formatDegrees(fahrenheit: number) {
-		return weatherUnits.value === 'metric'
+		return units.value.temperature === 'celsius'
 			? `${Math.round(((fahrenheit - 32) * 5) / 9)}°`
 			: `${Math.round(fahrenheit)}°`;
 	}
 
 	function formatTemperature(fahrenheit: number) {
-		const unit = weatherUnits.value === 'metric' ? 'C' : 'F';
+		const unit = units.value.temperature === 'celsius' ? 'C' : 'F';
 		return `${formatDegrees(fahrenheit)}${unit}`;
 	}
 
 	function formatSpeed(mph: number) {
-		return weatherUnits.value === 'metric'
-			? `${Math.round(mph * 1.609344)} km/h`
-			: `${Math.round(mph)} mph`;
+		switch (units.value.speed) {
+			case 'kmh':
+				return `${Math.round(mph * 1.609344)} km/h`;
+			case 'ms':
+				return `${Math.round(mph * 0.44704)} m/s`;
+			default:
+				return `${Math.round(mph)} mph`;
+		}
 	}
 </script>
 

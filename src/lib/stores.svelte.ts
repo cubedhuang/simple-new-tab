@@ -163,15 +163,34 @@ globalEffect(() => {
 	);
 });
 
-export const clock = new Stored('clock', {
+export interface ClockSettings {
+	hidden: boolean;
+	longMonth: boolean;
+	showDay: boolean;
+	hour12: boolean;
+	showTimezone: boolean;
+	hideSeconds: boolean;
+	/** empty means browser's language */
+	locale: string;
+}
+
+/** older versions' `dayFirst` picked between en-GB and en-US */
+export function migrateClock(saved: any): ClockSettings {
+	const { dayFirst, ...rest } = saved;
+	if (typeof rest.locale === 'string') return rest;
+	return { ...rest, locale: dayFirst ? 'en-GB' : 'en-US' };
+}
+
+export const clock = new Stored<ClockSettings>('clock', {
 	hidden: false,
 	longMonth: true,
 	showDay: true,
 	hour12: true,
 	showTimezone: false,
-	dayFirst: false,
-	hideSeconds: false
+	hideSeconds: false,
+	locale: ''
 });
+clock.value = migrateClock(clock.value);
 
 export interface Link {
 	id: string;
@@ -300,11 +319,24 @@ export const quoteTags = new Stored<string[]>('quote-tags', [
 
 export const discordId = new Stored('discordId', '');
 
-// anyone who set a key in the last has already allowed location access
-export const weatherPrecise = new Stored(
-	'weather-precise',
-	!!Stored.takeLegacy('weatherKey')
-);
+export interface WeatherPlace {
+	name: string;
+	/** includes the region and country, to tell apart places with the same name */
+	label: string;
+	lat: number;
+	lon: number;
+}
+
+export interface WeatherLocation {
+	mode: 'approximate' | 'precise' | 'manual';
+	place: WeatherPlace | null;
+}
+
+// anyone who set a key in the past has already allowed location access
+export const weatherLocation = new Stored<WeatherLocation>('weather-location', {
+	mode: Stored.takeLegacy('weatherKey') ? 'precise' : 'approximate',
+	place: null
+});
 
 // clean up old localStorage entries
 for (const key of ['weatherData', 'weatherDataTime', 'weatherDataKey']) {
@@ -315,7 +347,16 @@ export const weatherLayout = new Stored<'compact' | 'detailed'>(
 	'weather-layout',
 	'compact'
 );
-export const weatherUnits = new Stored<'imperial' | 'metric'>(
-	'weather-units',
-	'imperial'
-);
+
+export interface Units {
+	temperature: 'fahrenheit' | 'celsius';
+	speed: 'mph' | 'kmh' | 'ms';
+}
+
+// older versions had a single imperial/metric setting
+const legacyUnits = Stored.takeLegacy('weather-units');
+
+export const units = new Stored<Units>('units', {
+	temperature: legacyUnits === 'metric' ? 'celsius' : 'fahrenheit',
+	speed: legacyUnits === 'metric' ? 'kmh' : 'mph'
+});
