@@ -425,7 +425,7 @@
 
 	<div
 		class="mt-4 grid gap-4"
-		style:grid-template-columns="repeat(auto-fill, minmax(24em, 1fr))"
+		style:grid-template-columns="repeat(auto-fill, minmax(28em, 1fr))"
 	>
 		{#each linkColumns.value as column, columnIndex (column.id)}
 			<div
