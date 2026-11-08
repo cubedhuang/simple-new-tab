@@ -2,7 +2,7 @@
 	import { flip } from 'svelte/animate';
 	import { columns, links, generateId } from '../stores.svelte';
 	import Button from './Button.svelte';
-	import Text from './Text.svelte';
+	import TextInput from './TextInput.svelte';
 	import ArrowDown from './icons/ArrowDown.svelte';
 	import ArrowUp from './icons/ArrowUp.svelte';
 	import DeleteIcon from './icons/DeleteIcon.svelte';
@@ -59,7 +59,7 @@
 		<div animate:flip={{ duration: 300 }} class="mt-2 flex flex-col gap-1">
 			<div class="flex items-center">
 				<h4 class="flex-1">
-					<Text placeholder="title" bind:value={section.title} />
+					<TextInput placeholder="title" bind:value={section.title} />
 				</h4>
 
 				<div class="flex gap-1">
@@ -112,11 +112,17 @@
 						animate:flip={{ duration: 300 }}
 					>
 						<div class="flex-1">
-							<Text placeholder="name" bind:value={link.name} />
+							<TextInput
+								placeholder="name"
+								bind:value={link.name}
+							/>
 						</div>
 
 						<div class="flex-3">
-							<Text placeholder="url" bind:value={link.url} />
+							<TextInput
+								placeholder="url"
+								bind:value={link.url}
+							/>
 						</div>
 
 						<div class="flex gap-1">

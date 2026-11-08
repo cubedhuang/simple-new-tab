@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { formatOklch, parseColor, type Oklch } from '../oklch';
 
-	import Text from './Text.svelte';
+	import TextInput from './TextInput.svelte';
 
 	const MAX_CHROMA = 0.37;
 	const HUE_STOPS = Array.from({ length: 13 }, (_, i) => i * 30);
@@ -121,7 +121,7 @@
 		{/each}
 	</div>
 
-	<Text
+	<TextInput
 		placeholder="#1c1720 or oklch(0.215 0.018 310)"
 		bind:value={text}
 		on:input={setText}

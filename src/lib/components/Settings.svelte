@@ -20,9 +20,9 @@
 	import Button from './Button.svelte';
 	import ColorSettings from './ColorSettings.svelte';
 	import QuoteSettings from './QuoteSettings.svelte';
-	import Text from './Text.svelte';
+	import TextInput from './TextInput.svelte';
 	import SettingsLinks from './SettingsLinks.svelte';
-	import Number from './Number.svelte';
+	import NumberInput from './NumberInput.svelte';
 
 	export let open = true;
 
@@ -250,7 +250,7 @@
 
 				<div class="mt-2 flex items-center">
 					<div class="w-20">
-						<Number
+						<NumberInput
 							bind:value={fontSize.value}
 							step={5}
 							min={50}
@@ -277,7 +277,7 @@
 				</div>
 
 				<p class="mt-4">
-					<Text
+					<TextInput
 						placeholder="custom font name..."
 						bind:value={customFont}
 						on:input={() => {
@@ -461,7 +461,7 @@
 
 				{#if !tweaks.value.hideDiscord}
 					<p class="mt-1">
-						<Text
+						<TextInput
 							placeholder="discord user id"
 							bind:value={discordId.value}
 						/>
@@ -536,7 +536,7 @@
 					on:submit|preventDefault={importFromText}
 					class="flex gap-1 mt-1"
 				>
-					<Text
+					<TextInput
 						bind:value={importSettings}
 						placeholder="import..."
 						on:input={() => (importMessage = '')}
