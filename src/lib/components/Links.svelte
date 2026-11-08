@@ -292,6 +292,8 @@
 											class:opacity-50={item.done}
 											class:invisible={editing ===
 												item.id}
+											class:whitespace-pre-wrap={editing ===
+												item.id}
 											role="button"
 											tabindex="0"
 											draggable="true"
@@ -320,7 +322,7 @@
 
 										{#if editing === item.id}
 											<textarea
-												class="col-start-1 row-start-1 size-full resize-none overflow-hidden whitespace-pre-wrap break-words bg-transparent text-accent focus:outline-none placeholder:text-accent placeholder:opacity-50"
+												class="col-start-1 row-start-1 size-full resize-none overflow-hidden whitespace-pre-wrap wrap-break-word bg-transparent text-accent focus:outline-none placeholder:text-accent placeholder:opacity-50"
 												rows="1"
 												placeholder="todo"
 												aria-label="todo"
