@@ -7,9 +7,9 @@
 		discordId,
 		font,
 		fontSize,
-		columns,
 		dayKey,
-		links,
+		linkColumns,
+		splitIntoColumns,
 		presetFonts,
 		quoteTags,
 		tweaks,
@@ -22,11 +22,11 @@
 	import ColorSettings from './ColorSettings.svelte';
 	import QuoteSettings from './QuoteSettings.svelte';
 	import TextInput from './TextInput.svelte';
-	import SettingsLinks from './SettingsLinks.svelte';
 	import NumberInput from './NumberInput.svelte';
 	import Select from './Select.svelte';
 
 	export let open = true;
+	export let oneditlinks: () => void;
 
 	let customFont = presetFonts.includes(font.value) ? '' : font.value;
 
@@ -92,8 +92,7 @@
 			fontSize: fontSize.value,
 			colors: colors.value,
 			clock: clock.value,
-			links: links.value,
-			columns: columns.value,
+			linkColumns: linkColumns.value,
 			quoteTags: quoteTags.value,
 			weatherPrecise: weatherPrecise.value,
 			weatherUnits: weatherUnits.value,
@@ -184,6 +183,15 @@
 			typeof data !== 'object' ||
 			data === null ||
 			Array.isArray(data) ||
+			(data.linkColumns &&
+				!(
+					Array.isArray(data.linkColumns) &&
+					data.linkColumns.every(
+						(column: any) =>
+							typeof column?.id === 'string' &&
+							Array.isArray(column.sections)
+					)
+				)) ||
 			(data.links && !Array.isArray(data.links)) ||
 			(data.quoteTags && !Array.isArray(data.quoteTags))
 		) {
@@ -196,8 +204,11 @@
 		if (data.fontSize) fontSize.value = data.fontSize;
 		if (data.colors) colors.value = data.colors;
 		if (data.clock) clock.value = data.clock;
-		if (data.links) links.value = data.links;
-		if (data.columns) columns.value = data.columns;
+		if (data.linkColumns) {
+			linkColumns.value = data.linkColumns;
+		} else if (data.links) {
+			linkColumns.value = splitIntoColumns(data.links, data.columns ?? 1);
+		}
 		if (data.quoteTags) quoteTags.value = data.quoteTags;
 		// older exports have an OpenWeather API key instead, which used the browser's location
 		if (typeof data.weatherPrecise === 'boolean') {
@@ -232,7 +243,10 @@
 			<div class="flex items-baseline justify-between gap-2">
 				<h2 id="settings-title">settings</h2>
 
-				<Button on:click={() => (open = false)}>done</Button>
+				<p class="flex flex-wrap justify-end gap-1">
+					<Button on:click={oneditlinks}>edit links</Button>
+					<Button on:click={() => (open = false)}>done</Button>
+				</p>
 			</div>
 
 			<div>
@@ -427,8 +441,6 @@
 			</div>
 
 			<QuoteSettings />
-
-			<SettingsLinks />
 
 			<div>
 				<h3>weather</h3>

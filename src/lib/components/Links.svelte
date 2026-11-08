@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { columns, links, tweaks } from '../stores.svelte';
+	import { linkColumns, linkTransitionName, tweaks } from '../stores.svelte';
 
 	function normalize(url: string) {
 		const trimmed = url.trim();
@@ -9,32 +9,45 @@
 	}
 </script>
 
-<div
-	class="w-fit gap-x-8"
-	style:columns="{columns.value} 12em"
-	style:max-width={columns.value > 1
-		? `calc(${columns.value} * 24em + ${columns.value - 1} * 2rem)`
-		: null}
->
-	{#each links.value as { title, children }}
-		<ul class="mb-6 last:mb-0 break-inside-avoid">
-			<li>
-				<h2>{title}</h2>
-			</li>
-			{#each children as { name, url }}
-				<li
-					class={tweaks.value.bulletPoints
-						? 'ml-6 list-disc'
-						: "before:content-['-_']"}
-				>
-					<a
-						class="hover:text-accent transition-colors"
-						href={normalize(url)}
-					>
-						{name}
-					</a>
-				</li>
-			{/each}
-		</ul>
+<div class="flex flex-wrap gap-x-8 gap-y-6">
+	{#each linkColumns.value as column (column.id)}
+		{#if column.sections.length > 0}
+			<div class="min-w-[12em] max-w-[24em] flex flex-col gap-6">
+				{#each column.sections as { id, title, children } (id)}
+					<ul>
+						<li>
+							<h2
+								style:view-transition-name={linkTransitionName(
+									'section',
+									id
+								)}
+								style:view-transition-class="link-text"
+							>
+								{title}
+							</h2>
+						</li>
+						{#each children as { id, name, url } (id)}
+							<li
+								class={tweaks.value.bulletPoints
+									? 'ml-6 list-disc'
+									: "flex before:content-['-_'] before:whitespace-pre"}
+							>
+								<a
+									class="inline-block hover:text-accent transition-colors"
+									href={normalize(url)}
+									style:view-transition-name={linkTransitionName(
+										'link',
+										id
+									)}
+									style:view-transition-class="link-text"
+								>
+									{name}
+								</a>
+							</li>
+						{/each}
+					</ul>
+				{/each}
+			</div>
+		{/if}
 	{/each}
 </div>

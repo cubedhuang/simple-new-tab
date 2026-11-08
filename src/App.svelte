@@ -2,12 +2,14 @@
 	import Clock from './lib/components/Clock.svelte';
 	import Discord from './lib/components/Discord.svelte';
 	import Links from './lib/components/Links.svelte';
+	import LinksEditor from './lib/components/LinksEditor.svelte';
 	import Quote from './lib/components/Quote.svelte';
 	import Settings from './lib/components/Settings.svelte';
+	import EditIcon from './lib/components/icons/EditIcon.svelte';
 	import SettingsIcon from './lib/components/icons/SettingsIcon.svelte';
 	import TabStats from './lib/components/TabStats.svelte';
 	import Weather from './lib/components/Weather.svelte';
-	import { clock, tweaks } from './lib/stores.svelte';
+	import { clock, tweaks, withViewTransition } from './lib/stores.svelte';
 
 	let unfocused = false;
 
@@ -20,7 +22,19 @@
 	});
 
 	let settingsOpen = false;
+	let editingLinks = false;
+
+	function setEditingLinks(editing: boolean) {
+		if (editingLinks === editing) return;
+		withViewTransition(() => (editingLinks = editing));
+	}
 </script>
+
+<svelte:window
+	on:keydown={e => {
+		if (e.key === 'Escape' && !settingsOpen) setEditingLinks(false);
+	}}
+/>
 
 <svelte:head>
 	<title>{tweaks.value.capitalizedTitle ? 'New Tab' : 'new tab'}</title>
@@ -38,7 +52,11 @@
 		{#if !tweaks.value.hideQuote}
 			<Quote />
 		{/if}
-		<Links />
+		{#if editingLinks}
+			<LinksEditor ondone={() => setEditingLinks(false)} />
+		{:else}
+			<Links />
+		{/if}
 	</div>
 
 	<div class="ml-auto max-sm:mt-8 max-w-96 shrink-0 flow text-right">
@@ -56,14 +74,32 @@
 
 		<Discord />
 
-		<button
-			class="hover:text-accent hover:rotate-[-22.5deg] transition"
-			title="open settings"
-			on:click={() => (settingsOpen = true)}
-		>
-			<SettingsIcon />
-		</button>
+		<div class="flex justify-end gap-3">
+			<button
+				class="hover:text-accent transition"
+				class:text-accent={editingLinks}
+				title={editingLinks ? 'stop editing links' : 'edit links'}
+				aria-pressed={editingLinks}
+				on:click={() => setEditingLinks(!editingLinks)}
+			>
+				<EditIcon />
+			</button>
+
+			<button
+				class="hover:text-accent hover:rotate-[-22.5deg] transition"
+				title="open settings"
+				on:click={() => (settingsOpen = true)}
+			>
+				<SettingsIcon />
+			</button>
+		</div>
 	</div>
 
-	<Settings bind:open={settingsOpen} />
+	<Settings
+		bind:open={settingsOpen}
+		oneditlinks={() => {
+			settingsOpen = false;
+			setEditingLinks(true);
+		}}
+	/>
 </main>

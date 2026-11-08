@@ -1,3 +1,4 @@
+import { tick } from 'svelte';
 import { parseColor } from './oklch';
 import { themes, type Theme } from './themes';
 
@@ -27,10 +28,12 @@ export class Stored<T> {
 		});
 	}
 
-	static readLegacy(key: string) {
-		const saved =
-			localStorage.getItem(`simple-new-tab:${key}`) ||
-			localStorage.getItem(key);
+	/** read and delete */
+	static takeLegacy(key: string) {
+		const newKey = `simple-new-tab:${key}`;
+		const saved = localStorage.getItem(newKey) || localStorage.getItem(key);
+		localStorage.removeItem(newKey);
+		localStorage.removeItem(key);
 		try {
 			return saved && JSON.parse(saved);
 		} catch {
@@ -108,8 +111,11 @@ globalEffect(() => {
 	);
 });
 
-export function applyTheme(theme: Theme) {
-	const update = () => (colors.value = { ...theme.colors });
+export function linkTransitionName(kind: 'section' | 'link', id: string) {
+	return `${kind}-${CSS.escape(id)}`;
+}
+
+export function withViewTransition(update: () => void) {
 	if (
 		!document.startViewTransition ||
 		matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -117,7 +123,16 @@ export function applyTheme(theme: Theme) {
 		update();
 		return;
 	}
-	document.startViewTransition(update);
+	document.startViewTransition(async () => {
+		update();
+		await tick();
+	});
+}
+
+export function applyTheme(theme: Theme) {
+	withViewTransition(() => {
+		colors.value = { ...theme.colors };
+	});
 }
 
 export const presetFonts = [
@@ -158,23 +173,58 @@ export const clock = new Stored('clock', {
 	hideSeconds: false
 });
 
-interface Link {
+export interface Link {
 	id: string;
 	name: string;
 	url: string;
 }
 
-interface LinkSection {
+export interface LinkSection {
 	id: string;
 	title: string;
 	children: Link[];
 }
 
+export interface LinkColumn {
+	id: string;
+	sections: LinkSection[];
+}
+
+export const MAX_LINK_COLUMNS = 4;
+
 export function generateId() {
 	return Math.random().toString(36).substring(2, 10);
 }
 
-export const links = new Stored<LinkSection[]>('links', [
+export function splitIntoColumns(
+	sections: LinkSection[],
+	count: number
+): LinkColumn[] {
+	count = Math.min(Math.max(Math.round(count) || 1, 1), MAX_LINK_COLUMNS);
+
+	const columns: LinkColumn[] = Array.from({ length: count }, () => ({
+		id: generateId(),
+		sections: []
+	}));
+
+	const weights = sections.map(section => 1 + section.children.length);
+	const total = weights.reduce((sum, weight) => sum + weight, 0);
+
+	let before = 0;
+	sections.forEach((section, i) => {
+		const middle = before + weights[i] / 2;
+		const column = Math.min(
+			count - 1,
+			Math.floor((middle / total) * count)
+		);
+		columns[column].sections.push(section);
+		before += weights[i];
+	});
+
+	return columns;
+}
+
+const defaultSections: LinkSection[] = [
 	{
 		id: generateId(),
 		title: 'simple',
@@ -217,9 +267,19 @@ export const links = new Stored<LinkSection[]>('links', [
 			}
 		]
 	}
-]);
+];
 
-export const columns = new Stored('columns', 1);
+// older versions just had a list of links and column count
+const legacyLinks = Stored.takeLegacy('links');
+const legacyColumns = Stored.takeLegacy('columns');
+
+export const linkColumns = new Stored<LinkColumn[]>(
+	'link-columns',
+	splitIntoColumns(
+		Array.isArray(legacyLinks) ? legacyLinks : defaultSections,
+		typeof legacyColumns === 'number' ? legacyColumns : 1
+	)
+);
 
 export const defaultQuoteTags = [
 	'Future',
@@ -243,17 +303,11 @@ export const discordId = new Stored('discordId', '');
 // anyone who set a key in the last has already allowed location access
 export const weatherPrecise = new Stored(
 	'weather-precise',
-	!!Stored.readLegacy('weatherKey')
+	!!Stored.takeLegacy('weatherKey')
 );
 
 // clean up old localStorage entries
-for (const key of [
-	'simple-new-tab:weatherKey',
-	'weatherKey',
-	'weatherData',
-	'weatherDataTime',
-	'weatherDataKey'
-]) {
+for (const key of ['weatherData', 'weatherDataTime', 'weatherDataKey']) {
 	localStorage.removeItem(key);
 }
 
