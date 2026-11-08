@@ -3,14 +3,17 @@
 	import { flip } from 'svelte/animate';
 	import {
 		generateId,
+		isLinkSection,
 		linkColumns,
 		linkTransitionName,
 		MAX_LINK_COLUMNS,
 		type Link,
 		type LinkColumn,
-		type LinkSection
+		type LinkSection,
+		type Section
 	} from '../stores.svelte';
 	import Button from './Button.svelte';
+	import Notes from './Notes.svelte';
 	import DeleteIcon from './icons/DeleteIcon.svelte';
 	import DragHandle from './icons/DragHandle.svelte';
 
@@ -22,10 +25,14 @@
 		return linkColumns.value.find(column => column.id === id);
 	}
 
-	function findSection(id: string) {
+	function linkSections() {
 		return linkColumns.value
 			.flatMap(column => column.sections)
-			.find(section => section.id === id);
+			.filter(isLinkSection);
+	}
+
+	function findLinkSection(id: string) {
+		return linkSections().find(section => section.id === id);
 	}
 
 	function move(
@@ -72,7 +79,13 @@
 		column.sections.push({ id, title: '', children: [] });
 		focusById(id, 'input');
 		// this is the proxy instead of just the object
-		return column.sections[column.sections.length - 1];
+		return column.sections[column.sections.length - 1] as LinkSection;
+	}
+
+	function addNotes(column: LinkColumn) {
+		const id = generateId();
+		column.sections.push({ kind: 'notes', id, title: 'notes', text: '' });
+		focusById(id, 'textarea');
 	}
 
 	function addLink(section: LinkSection) {
@@ -92,9 +105,11 @@
 		const columnIndex = linkColumns.value.indexOf(column);
 		pruneEmptyColumns();
 
-		if (!section.title.trim() && section.children.every(isEmptyLink)) {
-			return;
-		}
+		const isEmpty = isLinkSection(section)
+			? !section.title.trim() && section.children.every(isEmptyLink)
+			: !section.text.trim();
+		if (isEmpty) return;
+
 		deleted.push({
 			name: section.title || 'untitled section',
 			restore() {
@@ -115,7 +130,7 @@
 		deleted.push({
 			name: link.name || 'unnamed link',
 			restore() {
-				findSection(sectionId)?.children.splice(index, 0, link);
+				findLinkSection(sectionId)?.children.splice(index, 0, link);
 			}
 		});
 	}
@@ -201,8 +216,9 @@
 			: index;
 	}
 
-	function onSectionDragOver(event: DragEvent, section: LinkSection) {
-		if (drag?.kind !== 'link') return;
+	function onSectionDragOver(event: DragEvent, section: Section) {
+		// links can't be dropped into notes
+		if (drag?.kind !== 'link' || !isLinkSection(section)) return;
 		const index = dropIndex(event, '[data-link-row]', section.children);
 		drop =
 			index === null
@@ -242,7 +258,9 @@
 			const lists: { id: string }[][] =
 				kind === 'section'
 					? [column.sections]
-					: column.sections.map(section => section.children);
+					: column.sections
+							.filter(isLinkSection)
+							.map(section => section.children);
 
 			for (const list of lists) {
 				const index = list.findIndex(item => item.id === id);
@@ -268,7 +286,7 @@
 			} else {
 				const target =
 					drop.kind === 'link'
-						? findSection(drop.sectionId)?.children
+						? findLinkSection(drop.sectionId)?.children
 						: findColumn(drop.columnId)?.sections;
 
 				if (target) {
@@ -368,7 +386,7 @@
 			return;
 		}
 
-		const sections = linkColumns.value.flatMap(column => column.sections);
+		const sections = linkSections();
 		const neighbor = sections[sections.indexOf(section) + delta];
 		if (!neighbor) return;
 
@@ -423,10 +441,7 @@
 		<Button pressed on:click={ondone}>done</Button>
 	</p>
 
-	<div
-		class="mt-4 grid gap-4"
-		style:grid-template-columns="repeat(auto-fill, minmax(28em, 1fr))"
-	>
+	<div class="mt-4 grid gap-4 grid-cols-fill-96 2xl:grid-cols-fill-120">
 		{#each linkColumns.value as column, columnIndex (column.id)}
 			<div
 				class="min-h-24 p-3 flex flex-col gap-6 rounded-lg border-2 border-dashed border-current/15"
@@ -486,79 +501,94 @@
 							</button>
 						</div>
 
-						<ul class="flex flex-col gap-1">
-							{#each section.children as link, linkIndex (link.id)}
-								<li
-									class="relative flex items-center gap-1 transition-opacity"
-									class:opacity-50={lifted &&
-										drag?.id === link.id}
-									data-link-row
-									animate:flip={{ duration: 300 }}
-								>
-									{#if drop?.kind === 'link' && drop.sectionId === section.id}
-										{#if drop.index === linkIndex}
-											{@render dropLine('top', '-3px')}
-										{:else if drop.index === section.children.length && linkIndex === section.children.length - 1}
-											{@render dropLine('bottom', '-3px')}
-										{/if}
-									{/if}
-
-									{@render handle(
-										{ kind: 'link', id: link.id },
-										link.name || 'unnamed link',
-										event =>
-											onLinkHandleKey(
-												event,
-												section,
-												linkIndex
-											)
-									)}
-
-									<input
-										class="input link-transition flex-2"
-										style:--link-transition={linkTransitionName(
-											'link',
-											link.id
-										)}
-										type="text"
-										placeholder="name"
-										aria-label="link name"
-										data-focus-id={link.id}
-										bind:value={link.name}
-									/>
-
-									<input
-										class="input flex-3 text-ellipsis"
-										type="text"
-										placeholder="url"
-										aria-label="link url"
-										bind:value={link.url}
-									/>
-
-									<button
-										class="delete"
-										title="delete link"
-										onclick={() =>
-											deleteLink(section, linkIndex)}
-									>
-										<DeleteIcon />
-									</button>
-								</li>
-							{:else}
-								{#if drop?.kind === 'link' && drop.sectionId === section.id}
+						{#if section.kind === 'notes'}
+							<div class="ml-7">
+								<Notes
+									bind:value={section.text}
+									id={section.id}
+								/>
+							</div>
+						{:else}
+							<ul class="flex flex-col gap-1">
+								{#each section.children as link, linkIndex (link.id)}
 									<li
-										class="h-0.5 rounded-full bg-accent"
-										aria-hidden="true"
-									></li>
-								{/if}
-							{/each}
-						</ul>
+										class="relative flex items-center gap-1 transition-opacity"
+										class:opacity-50={lifted &&
+											drag?.id === link.id}
+										data-link-row
+										animate:flip={{ duration: 300 }}
+									>
+										{#if drop?.kind === 'link' && drop.sectionId === section.id}
+											{#if drop.index === linkIndex}
+												{@render dropLine(
+													'top',
+													'-3px'
+												)}
+											{:else if drop.index === section.children.length && linkIndex === section.children.length - 1}
+												{@render dropLine(
+													'bottom',
+													'-3px'
+												)}
+											{/if}
+										{/if}
 
-						<p class="ml-7">
-							<Button on:click={() => addLink(section)}
-								>+ link</Button
-							>
-						</p>
+										{@render handle(
+											{ kind: 'link', id: link.id },
+											link.name || 'unnamed link',
+											event =>
+												onLinkHandleKey(
+													event,
+													section,
+													linkIndex
+												)
+										)}
+
+										<input
+											class="input link-transition flex-2"
+											style:--link-transition={linkTransitionName(
+												'link',
+												link.id
+											)}
+											type="text"
+											placeholder="name"
+											aria-label="link name"
+											data-focus-id={link.id}
+											bind:value={link.name}
+										/>
+
+										<input
+											class="input flex-3 text-ellipsis"
+											type="text"
+											placeholder="url"
+											aria-label="link url"
+											bind:value={link.url}
+										/>
+
+										<button
+											class="delete"
+											title="delete link"
+											onclick={() =>
+												deleteLink(section, linkIndex)}
+										>
+											<DeleteIcon />
+										</button>
+									</li>
+								{:else}
+									{#if drop?.kind === 'link' && drop.sectionId === section.id}
+										<li
+											class="h-0.5 rounded-full bg-accent"
+											aria-hidden="true"
+										></li>
+									{/if}
+								{/each}
+							</ul>
+
+							<p class="ml-7">
+								<Button on:click={() => addLink(section)}
+									>+ link</Button
+								>
+							</p>
+						{/if}
 					</div>
 				{:else}
 					{#if drop?.kind === 'section' && drop.columnId === column.id}
@@ -573,6 +603,7 @@
 					<Button on:click={() => addSection(column)}
 						>+ section</Button
 					>
+					<Button on:click={() => addNotes(column)}>+ notes</Button>
 				</p>
 			</div>
 		{/each}

@@ -26,6 +26,13 @@ body {
 	font-weight: var(--heading-font-weight);
 }
 
+@utility grid-cols-fill-* {
+	grid-template-columns: repeat(
+		auto-fill,
+		minmax(min(100%, --spacing(--value(integer))), 1fr)
+	);
+}
+
 @layer base {
 	@font-face {
 		font-family: 'OpenDyslexic';

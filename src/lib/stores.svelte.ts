@@ -121,7 +121,10 @@ globalEffect(() => {
 	);
 });
 
-export function linkTransitionName(kind: 'section' | 'link', id: string) {
+export function linkTransitionName(
+	kind: 'section' | 'link' | 'notes',
+	id: string
+) {
 	return `${kind}-${CSS.escape(id)}`;
 }
 
@@ -218,14 +221,30 @@ export interface Link {
 }
 
 export interface LinkSection {
+	/** absent so sections saved before notes existed are still link sections */
+	kind?: undefined;
 	id: string;
 	title: string;
 	children: Link[];
 }
 
+/** scratchpad */
+export interface NotesSection {
+	kind: 'notes';
+	id: string;
+	title: string;
+	text: string;
+}
+
+export type Section = LinkSection | NotesSection;
+
+export function isLinkSection(section: Section): section is LinkSection {
+	return section.kind !== 'notes';
+}
+
 export interface LinkColumn {
 	id: string;
-	sections: LinkSection[];
+	sections: Section[];
 }
 
 export const MAX_LINK_COLUMNS = 4;
