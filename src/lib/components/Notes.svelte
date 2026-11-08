@@ -1,14 +1,5 @@
 <script lang="ts">
-	import { linkTransitionName } from '../stores.svelte';
-
-	let {
-		value = $bindable(),
-		id
-	}: {
-		value: string;
-		/** section id for transitions and focus */
-		id: string;
-	} = $props();
+	import { notes } from '../stores.svelte';
 
 	let textarea: HTMLTextAreaElement;
 
@@ -23,20 +14,25 @@
 
 	$effect(() => {
 		// text changing in another tab can refit it
-		void value;
+		void notes.value;
 		fit();
 	});
 </script>
 
 <svelte:window onresize={fit} />
 
-<textarea
-	bind:this={textarea}
-	bind:value
-	data-focus-id={id}
-	style:--link-transition={linkTransitionName('notes', id)}
-	rows="2"
-	placeholder="notes..."
-	aria-label="notes"
-	class="link-transition block w-full contain-inline-size min-h-[calc(2lh+0.5rem+4px)] px-2 py-1 resize-none overflow-hidden field-sizing-content bg-control border-2 border-current/10 rounded-lg transition-colors placeholder:text-body placeholder:opacity-50
-	    focus:outline-none focus:border-accent/50"></textarea>
+<div class="max-w-prose">
+	<h2 class="link-transition" style:--link-transition="notes-heading">
+		notes
+	</h2>
+
+	<textarea
+		bind:this={textarea}
+		bind:value={notes.value}
+		style:--link-transition="notes-text"
+		rows="2"
+		placeholder="notes..."
+		aria-label="notes"
+		class="link-transition block w-full contain-inline-size min-h-[calc(2lh+0.5rem+4px)] px-2 py-1 resize-none overflow-hidden field-sizing-content bg-control border-2 border-current/10 rounded-lg transition-colors placeholder:text-body placeholder:opacity-50
+		    focus:outline-none focus:border-accent/50"></textarea>
+</div>

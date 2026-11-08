@@ -12,6 +12,7 @@
 		linkColumns,
 		splitIntoColumns,
 		presetFonts,
+		notes,
 		quoteTags,
 		tweaks,
 		units,
@@ -97,6 +98,7 @@
 			clock: clock.value,
 			linkColumns: linkColumns.value,
 			quoteTags: quoteTags.value,
+			notes: notes.value,
 			weatherLocation: weatherLocation.value,
 			units: units.value,
 			weatherLayout: weatherLayout.value,
@@ -191,6 +193,7 @@
 			linkColumns.value = splitIntoColumns(data.links, data.columns ?? 1);
 		}
 		if (data.quoteTags) quoteTags.value = data.quoteTags;
+		if (typeof data.notes === 'string') notes.value = data.notes;
 		if (data.weatherLocation?.mode) {
 			weatherLocation.value = data.weatherLocation;
 		} else if (data.weatherKey) {
@@ -220,7 +223,7 @@
 
 {#if open}
 	<dialog
-		class="fixed inset-0 z-10 grid place-items-center size-full max-w-none max-h-screen px-8 py-8 overflow-auto bg-transparent text-body outline-hidden before:fixed before:inset-0 before:-z-10 before:bg-black/50"
+		class="fixed inset-0 z-10 grid place-items-center size-full max-w-none max-h-screen px-8 py-8 overflow-auto bg-transparent text-body outline-hidden before:fixed before:inset-0 before:-z-10 before:bg-black/20"
 		aria-labelledby="settings-title"
 		tabindex="-1"
 		use:modal
@@ -262,6 +265,15 @@
 						}}
 					>
 						Show Tab Stats
+					</Button>
+
+					<Button
+						pressed={!tweaks.value.hideNotes}
+						on:click={() => {
+							tweaks.value.hideNotes = !tweaks.value.hideNotes;
+						}}
+					>
+						Show Notes
 					</Button>
 
 					<Button

@@ -83,7 +83,8 @@ export const tweaks = new Stored('tweaks', {
 	bulletPoints: false,
 	boldHeadings: false,
 	hideWeather: false,
-	hideDiscord: false
+	hideDiscord: false,
+	hideNotes: false
 });
 
 globalEffect(() => {
@@ -122,7 +123,7 @@ globalEffect(() => {
 });
 
 export function linkTransitionName(
-	kind: 'section' | 'link' | 'notes',
+	kind: 'section' | 'link' | 'todo' | 'checkbox',
 	id: string
 ) {
 	return `${kind}-${CSS.escape(id)}`;
@@ -228,19 +229,21 @@ export interface LinkSection {
 	children: Link[];
 }
 
-/** scratchpad */
-export interface NotesSection {
-	kind: 'notes';
+export interface TodoItem {
+	id: string;
+	text: string;
+	done: boolean;
+}
+
+/** shares `children` with link sections so moving and deleting items works the same for both */
+export interface TodoSection {
+	kind: 'todo';
 	id: string;
 	title: string;
-	text: string;
+	children: TodoItem[];
 }
 
-export type Section = LinkSection | NotesSection;
-
-export function isLinkSection(section: Section): section is LinkSection {
-	return section.kind !== 'notes';
-}
+export type Section = LinkSection | TodoSection;
 
 export interface LinkColumn {
 	id: string;
@@ -398,3 +401,5 @@ export const units = new Stored<Units>('units', {
 	temperature: legacyUnits === 'metric' ? 'celsius' : 'fahrenheit',
 	speed: legacyUnits === 'metric' ? 'kmh' : 'mph'
 });
+
+export const notes = new Stored('notes', '');

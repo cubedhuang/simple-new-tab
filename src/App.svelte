@@ -2,6 +2,7 @@
 	import Clock from './lib/components/Clock.svelte';
 	import Discord from './lib/components/Discord.svelte';
 	import Links from './lib/components/Links.svelte';
+	import Notes from './lib/components/Notes.svelte';
 	import LinksEditor from './lib/components/LinksEditor.svelte';
 	import Quote from './lib/components/Quote.svelte';
 	import Settings from './lib/components/Settings.svelte';
@@ -56,6 +57,10 @@
 			<LinksEditor ondone={() => setEditingLinks(false)} />
 		{:else}
 			<Links />
+		{/if}
+
+		{#if !tweaks.value.hideNotes}
+			<Notes />
 		{/if}
 	</div>
 
