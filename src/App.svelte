@@ -82,15 +82,23 @@
 				aria-pressed={editingLinks}
 				on:click={() => setEditingLinks(!editingLinks)}
 			>
-				<EditIcon />
+				<span class="block transition {editingLinks ? '-rotate-45' : ''}">
+					<EditIcon />
+				</span>
 			</button>
 
 			<button
-				class="hover:text-accent hover:rotate-[-22.5deg] transition"
+				class="group hover:text-accent transition"
 				title="open settings"
 				on:click={() => (settingsOpen = true)}
 			>
-				<SettingsIcon />
+				<span
+					class="block transition {settingsOpen
+						? 'text-accent rotate-[-22.5deg]'
+						: 'group-hover:rotate-[-22.5deg]'}"
+				>
+					<SettingsIcon />
+				</span>
 			</button>
 		</div>
 	</div>

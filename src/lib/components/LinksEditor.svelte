@@ -464,7 +464,7 @@
 							)}
 
 							<input
-								class="input flex-1 text-accent"
+								class="input flex-1 text-accent font-heading"
 								style:view-transition-name={linkTransitionName(
 									'section',
 									section.id

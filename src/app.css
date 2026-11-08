@@ -21,6 +21,11 @@ body {
 	font-size: 1rem;
 }
 
+@utility font-heading {
+	--tw-font-weight: var(--heading-font-weight);
+	font-weight: var(--heading-font-weight);
+}
+
 @layer base {
 	@font-face {
 		font-family: 'OpenDyslexic';
@@ -63,9 +68,7 @@ body {
 	h1,
 	h2,
 	h3 {
-		@apply text-accent;
-
-		font-weight: var(--heading-font-weight);
+		@apply text-accent font-heading;
 	}
 
 	::-webkit-scrollbar {
