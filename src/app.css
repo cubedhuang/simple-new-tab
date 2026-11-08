@@ -83,14 +83,20 @@ body {
 	::-moz-color-swatch {
 		border: none;
 	}
-}
 
-::view-transition-old(*.link-text),
-::view-transition-new(*.link-text) {
-	width: 100%;
-	height: 100%;
-	object-fit: none;
-	object-position: left center;
+	/* only give them the view transition when root has this class so that other view transitions like changing theme doesn't tweak out */
+	:root.move-links .link-transition {
+		view-transition-name: var(--link-transition);
+		view-transition-class: link-text;
+	}
+
+	::view-transition-old(*.link-text),
+	::view-transition-new(*.link-text) {
+		width: 100%;
+		height: 100%;
+		object-fit: none;
+		object-position: left center;
+	}
 }
 
 @layer components {

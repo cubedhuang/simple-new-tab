@@ -17,11 +17,11 @@
 					<ul>
 						<li>
 							<h2
-								style:view-transition-name={linkTransitionName(
+								class="link-transition"
+								style:--link-transition={linkTransitionName(
 									'section',
 									id
 								)}
-								style:view-transition-class="link-text"
 							>
 								{title}
 							</h2>
@@ -33,13 +33,12 @@
 									: "flex before:content-['-_'] before:whitespace-pre"}
 							>
 								<a
-									class="inline-block hover:text-accent transition-colors"
+									class="link-transition inline-block hover:text-accent transition-colors"
 									href={normalize(url)}
-									style:view-transition-name={linkTransitionName(
+									style:--link-transition={linkTransitionName(
 										'link',
 										id
 									)}
-									style:view-transition-class="link-text"
 								>
 									{name}
 								</a>

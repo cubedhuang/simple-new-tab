@@ -26,7 +26,7 @@
 
 	function setEditingLinks(editing: boolean) {
 		if (editingLinks === editing) return;
-		withViewTransition(() => (editingLinks = editing));
+		withViewTransition(() => (editingLinks = editing), 'move-links');
 	}
 </script>
 

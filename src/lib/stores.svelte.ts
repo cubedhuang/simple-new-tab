@@ -14,6 +14,7 @@ export class Stored<T> {
 
 	constructor(key: string, initialValue: T, storage: Storage = localStorage) {
 		const newKey = `simple-new-tab:${key}`;
+		const fallback = JSON.stringify(initialValue);
 
 		const saved = storage.getItem(newKey) || storage.getItem(key);
 		if (saved) {
@@ -25,6 +26,15 @@ export class Stored<T> {
 
 		globalEffect(() => {
 			storage.setItem(newKey, JSON.stringify(this.value));
+		});
+
+		addEventListener('storage', event => {
+			if (event.storageArea !== storage) return;
+			if (event.key !== null && event.key !== newKey) return;
+
+			try {
+				this.value = JSON.parse(event.newValue ?? fallback);
+			} catch {}
 		});
 	}
 
@@ -115,7 +125,7 @@ export function linkTransitionName(kind: 'section' | 'link', id: string) {
 	return `${kind}-${CSS.escape(id)}`;
 }
 
-export function withViewTransition(update: () => void) {
+export function withViewTransition(update: () => void, rootClass?: string) {
 	if (
 		!document.startViewTransition ||
 		matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -123,10 +133,19 @@ export function withViewTransition(update: () => void) {
 		update();
 		return;
 	}
-	document.startViewTransition(async () => {
+
+	const root = document.documentElement;
+	if (rootClass) root.classList.add(rootClass);
+
+	const transition = document.startViewTransition(async () => {
 		update();
 		await tick();
 	});
+
+	if (rootClass) {
+		const remove = () => root.classList.remove(rootClass);
+		transition.finished.then(remove, remove);
+	}
 }
 
 export function applyTheme(theme: Theme) {

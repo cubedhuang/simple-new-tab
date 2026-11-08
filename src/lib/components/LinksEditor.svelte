@@ -464,12 +464,11 @@
 							)}
 
 							<input
-								class="input flex-1 text-accent font-heading"
-								style:view-transition-name={linkTransitionName(
+								class="input link-transition flex-1 text-accent font-heading"
+								style:--link-transition={linkTransitionName(
 									'section',
 									section.id
 								)}
-								style:view-transition-class="link-text"
 								type="text"
 								placeholder="section title"
 								aria-label="section title"
@@ -516,12 +515,11 @@
 									)}
 
 									<input
-										class="input flex-2"
-										style:view-transition-name={linkTransitionName(
+										class="input link-transition flex-2"
+										style:--link-transition={linkTransitionName(
 											'link',
 											link.id
 										)}
-										style:view-transition-class="link-text"
 										type="text"
 										placeholder="name"
 										aria-label="link name"
