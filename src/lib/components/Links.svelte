@@ -13,23 +13,33 @@
 	import * as reorder from '../reorder';
 	import Checkbox from './Checkbox.svelte';
 
-	function addTodo(event: KeyboardEvent, section: TodoSection) {
-		const input = event.currentTarget as HTMLInputElement;
-		const text = input.value.trim();
-		if (event.key !== 'Enter' || !text) return;
+	// typing in the add row creates the todo right away and keeps typing in it
+	let adding: string | null = null;
 
-		section.children.push({ id: generateId(), text, done: false });
+	function addTodo(event: Event, section: TodoSection) {
+		const input = event.currentTarget as HTMLInputElement;
+		if ((event as InputEvent).isComposing || !input.value.trim()) return;
+
+		const id = generateId();
+		section.children.push({ id, text: input.value, done: false });
 		input.value = '';
+		editing = adding = id;
 	}
 
 	// editing
 
 	let editing = $state<string | null>(null);
 
-	function finishEditing(section: TodoSection, item: TodoItem) {
+	async function finishEditing(
+		section: TodoSection,
+		item: TodoItem,
+		next = false
+	) {
 		// enter and the blur from unmounting can both finish it
 		if (editing !== item.id) return;
 		editing = null;
+		const returning = next && adding === item.id;
+		adding = null;
 
 		// the text wraps like html, so line breaks and runs of spaces don't show anyway
 		item.text = item.text.replace(/\s+/g, ' ').trim();
@@ -38,6 +48,13 @@
 			section.children = section.children.filter(
 				({ id }) => id !== item.id
 			);
+		}
+
+		if (returning) {
+			await tick();
+			document
+				.querySelector<HTMLElement>(`[data-add-todo="${section.id}"]`)
+				?.focus();
 		}
 	}
 
@@ -330,7 +347,9 @@
 														event.preventDefault();
 														finishEditing(
 															section,
-															item
+															item,
+															event.key ===
+																'Enter'
 														);
 													}
 												}}></textarea>
@@ -358,7 +377,10 @@
 									placeholder="add..."
 									aria-label="add to {section.title ||
 										'todo list'}"
-									onkeydown={event => addTodo(event, section)}
+									data-add-todo={section.id}
+									oninput={event => addTodo(event, section)}
+									oncompositionend={event =>
+										addTodo(event, section)}
 								/>
 							</li>
 						{:else}
