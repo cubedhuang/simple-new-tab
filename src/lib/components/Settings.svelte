@@ -8,6 +8,7 @@
 		font,
 		fontSize,
 		columns,
+		dayKey,
 		links,
 		presetFonts,
 		quoteTags,
@@ -23,6 +24,7 @@
 	import TextInput from './TextInput.svelte';
 	import SettingsLinks from './SettingsLinks.svelte';
 	import NumberInput from './NumberInput.svelte';
+	import Select from './Select.svelte';
 
 	export let open = true;
 
@@ -77,8 +79,14 @@
 		}
 	}
 
-	async function exportToClipboard() {
-		const data = {
+	function parseSettings(text: string) {
+		const trimmed = text.trim();
+		if (trimmed.startsWith('{')) return JSON.parse(trimmed);
+		return decodeSettings(trimmed);
+	}
+
+	function collectSettings() {
+		return {
 			tweaks: tweaks.value,
 			font: font.value,
 			fontSize: fontSize.value,
@@ -92,12 +100,44 @@
 			weatherLayout: weatherLayout.value,
 			discordId: discordId.value
 		};
+	}
 
+	async function exportToClipboard() {
 		try {
-			await navigator.clipboard.writeText(encodeSettings(data));
+			await navigator.clipboard.writeText(
+				encodeSettings(collectSettings())
+			);
 			exportMessage = 'Copied to clipboard!';
 		} catch {
 			exportMessage = 'Failed to copy settings to clipboard.';
+		}
+	}
+
+	function exportToFile() {
+		const blob = new Blob([JSON.stringify(collectSettings(), null, '\t')], {
+			type: 'application/json'
+		});
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = `simple-new-tab-settings-${dayKey(new Date())}.json`;
+		a.click();
+		setTimeout(() => URL.revokeObjectURL(url), 1000);
+		exportMessage = 'Downloaded settings file!';
+	}
+
+	let fileInput: HTMLInputElement;
+
+	async function importFromFile() {
+		const file = fileInput.files?.[0];
+		fileInput.value = '';
+		if (!file) return;
+
+		importMessage = '';
+		try {
+			importData(parseSettings(await file.text()));
+		} catch {
+			importMessage = "That doesn't look like a settings file.";
 		}
 	}
 
@@ -129,12 +169,17 @@
 		let data;
 
 		try {
-			data = decodeSettings(importSettings);
+			data = parseSettings(importSettings);
 		} catch {
 			importMessage = "That doesn't look like exported settings.";
 			return;
 		}
 
+		if (importData(data)) importSettings = '';
+	}
+
+	/** returns whether the import succeeded */
+	function importData(data: any) {
 		if (
 			typeof data !== 'object' ||
 			data === null ||
@@ -143,7 +188,7 @@
 			(data.quoteTags && !Array.isArray(data.quoteTags))
 		) {
 			importMessage = "That doesn't look like exported settings.";
-			return;
+			return false;
 		}
 
 		if (data.tweaks) tweaks.value = data.tweaks;
@@ -165,8 +210,8 @@
 		if (data.discordId) discordId.value = data.discordId;
 
 		customFont = presetFonts.includes(font.value) ? '' : font.value;
-		importSettings = '';
 		importMessage = 'Settings imported!';
+		return true;
 	}
 </script>
 
@@ -195,54 +240,54 @@
 
 				<p class="mt-1 flex flex-wrap gap-1">
 					<Button
-						on:click={() => {
-							tweaks.value.capitalizedTitle =
-								!tweaks.value.capitalizedTitle;
-						}}
-					>
-						{tweaks.value.capitalizedTitle
-							? 'Capitalized'
-							: 'Lowercase'}
-						Title
-					</Button>
-
-					<Button
+						pressed={!tweaks.value.hideQuote}
 						on:click={() => {
 							tweaks.value.hideQuote = !tweaks.value.hideQuote;
 						}}
 					>
-						Quote
-						{tweaks.value.hideQuote ? 'Hidden' : 'Shown'}
+						Show Quote
 					</Button>
 
 					<Button
+						pressed={!tweaks.value.hideTabCount}
 						on:click={() => {
 							tweaks.value.hideTabCount =
 								!tweaks.value.hideTabCount;
 						}}
 					>
-						Tab Stats
-						{tweaks.value.hideTabCount ? 'Hidden' : 'Shown'}
+						Show Tab Stats
 					</Button>
 
 					<Button
-						on:click={() => {
-							tweaks.value.bulletPoints =
-								!tweaks.value.bulletPoints;
-						}}
-					>
-						{tweaks.value.bulletPoints ? 'Bullet Points' : 'Dashes'}
-					</Button>
-
-					<Button
+						pressed={tweaks.value.boldHeadings}
 						on:click={() => {
 							tweaks.value.boldHeadings =
 								!tweaks.value.boldHeadings;
 						}}
 					>
-						{tweaks.value.boldHeadings ? 'Bold' : 'Normal'} Headings
+						Bold Headings
 					</Button>
 				</p>
+
+				<div class="mt-2 flex flex-wrap gap-x-4 gap-y-2">
+					<Select
+						label="Title"
+						bind:value={tweaks.value.capitalizedTitle}
+						options={[
+							{ value: false, label: 'lowercase' },
+							{ value: true, label: 'Capitalized' }
+						]}
+					/>
+
+					<Select
+						label="List Style"
+						bind:value={tweaks.value.bulletPoints}
+						options={[
+							{ value: false, label: 'Dashes' },
+							{ value: true, label: 'Bullet Points' }
+						]}
+					/>
+				</div>
 			</div>
 
 			<div>
@@ -307,68 +352,78 @@
 			<div>
 				<h3>clock</h3>
 
-				<p class="mt-1">
+				<p class="mt-1 flex flex-wrap gap-1">
 					<Button
+						pressed={!clock.value.hidden}
 						on:click={() => {
 							clock.value.hidden = !clock.value.hidden;
 						}}
 					>
-						Clock {clock.value.hidden ? 'Hidden' : 'Shown'}
+						Show Clock
 					</Button>
+
+					{#if !clock.value.hidden}
+						<Button
+							pressed={clock.value.showDay}
+							on:click={() => {
+								clock.value.showDay = !clock.value.showDay;
+							}}
+						>
+							Show Day of Week
+						</Button>
+
+						<Button
+							pressed={!clock.value.hideSeconds}
+							on:click={() => {
+								clock.value.hideSeconds =
+									!clock.value.hideSeconds;
+							}}
+						>
+							Show Seconds
+						</Button>
+
+						<Button
+							pressed={clock.value.showTimezone}
+							on:click={() => {
+								clock.value.showTimezone =
+									!clock.value.showTimezone;
+							}}
+						>
+							Show Timezone
+						</Button>
+					{/if}
 				</p>
 
-				<p class="mt-1">
-					<Button
-						on:click={() => {
-							clock.value.longMonth = !clock.value.longMonth;
-						}}
-					>
-						Month {clock.value.longMonth ? 'Name' : 'Number'}
-					</Button>
+				{#if !clock.value.hidden}
+					<div class="mt-2 flex flex-wrap gap-x-4 gap-y-2">
+						<Select
+							label="Month"
+							bind:value={clock.value.longMonth}
+							options={[
+								{ value: true, label: 'Name' },
+								{ value: false, label: 'Number' }
+							]}
+						/>
 
-					<Button
-						on:click={() => {
-							clock.value.showDay = !clock.value.showDay;
-						}}
-					>
-						Day of Week {clock.value.showDay ? 'Shown' : 'Hidden'}
-					</Button>
+						<Select
+							label="Date Order"
+							bind:value={clock.value.dayFirst}
+							options={[
+								{ value: false, label: 'Month First' },
+								{ value: true, label: 'Day First' }
+							]}
+						/>
 
-					<Button
-						on:click={() => {
-							clock.value.dayFirst = !clock.value.dayFirst;
-						}}
-					>
-						{clock.value.dayFirst ? 'Day' : 'Month'} First
-					</Button>
-				</p>
-
-				<p class="mt-1">
-					<Button
-						on:click={() => {
-							clock.value.hour12 = !clock.value.hour12;
-						}}
-					>
-						{clock.value.hour12 ? 12 : 24} Hour Format
-					</Button>
-
-					<Button
-						on:click={() => {
-							clock.value.showTimezone =
-								!clock.value.showTimezone;
-						}}
-					>
-						Timezone {clock.value.showTimezone ? 'Shown' : 'Hidden'}
-					</Button>
-
-					<Button
-						on:click={() => {
-							clock.value.hideSeconds = !clock.value.hideSeconds;
-						}}
-					>
-						Seconds {clock.value.hideSeconds ? 'Hidden' : 'Shown'}
-					</Button>
-				</p>
+						<Select
+							label="Time Format"
+							bind:value={clock.value.hour12}
+							options={[
+								{ value: true, label: '12 Hour' },
+								{ value: false, label: '24 Hour' }
+							]}
+						/>
+					</div>
+				{/if}
 			</div>
 
 			<QuoteSettings />
@@ -399,46 +454,46 @@
 
 				<p class="mt-1 flex flex-wrap gap-1">
 					<Button
+						pressed={!tweaks.value.hideWeather}
 						on:click={() => {
 							tweaks.value.hideWeather =
 								!tweaks.value.hideWeather;
 						}}
 					>
-						Weather {tweaks.value.hideWeather ? 'Hidden' : 'Shown'}
+						Show Weather
 					</Button>
 
 					{#if !tweaks.value.hideWeather}
-						<Button on:click={togglePreciseWeather}>
-							{weatherPrecise.value ? 'Precise' : 'Approximate'} Location
-						</Button>
-
 						<Button
-							on:click={() => {
-								weatherUnits.value =
-									weatherUnits.value === 'metric'
-										? 'imperial'
-										: 'metric';
-							}}
+							pressed={weatherPrecise.value}
+							on:click={togglePreciseWeather}
 						>
-							{weatherUnits.value === 'metric'
-								? 'Metric'
-								: 'Imperial'} Units
-						</Button>
-
-						<Button
-							on:click={() => {
-								weatherLayout.value =
-									weatherLayout.value === 'compact'
-										? 'detailed'
-										: 'compact';
-							}}
-						>
-							{weatherLayout.value === 'compact'
-								? 'Compact'
-								: 'Detailed'} Layout
+							Precise Location
 						</Button>
 					{/if}
 				</p>
+
+				{#if !tweaks.value.hideWeather}
+					<div class="mt-2 flex flex-wrap gap-x-4 gap-y-2">
+						<Select
+							label="Units"
+							bind:value={weatherUnits.value}
+							options={[
+								{ value: 'imperial', label: 'Imperial' },
+								{ value: 'metric', label: 'Metric' }
+							]}
+						/>
+
+						<Select
+							label="Layout"
+							bind:value={weatherLayout.value}
+							options={[
+								{ value: 'compact', label: 'Compact' },
+								{ value: 'detailed', label: 'Detailed' }
+							]}
+						/>
+					</div>
+				{/if}
 
 				{#if weatherMessage}
 					<p class="mt-2" role="status">{weatherMessage}</p>
@@ -459,25 +514,71 @@
 					>.
 				</p>
 
-				{#if !tweaks.value.hideDiscord}
-					<p class="mt-1">
-						<TextInput
-							placeholder="discord user id"
-							bind:value={discordId.value}
-						/>
-					</p>
-				{/if}
-
-				<p class="mt-1">
+				<p class="mt-1 flex flex-wrap gap-1">
 					<Button
+						pressed={!tweaks.value.hideDiscord}
 						on:click={() => {
 							tweaks.value.hideDiscord =
 								!tweaks.value.hideDiscord;
 						}}
 					>
-						Discord {tweaks.value.hideDiscord ? 'Hidden' : 'Shown'}
+						Show Discord
 					</Button>
+
+					{#if !tweaks.value.hideDiscord}
+						<span class="flex-1">
+							<TextInput
+								placeholder="discord user id"
+								bind:value={discordId.value}
+							/>
+						</span>
+					{/if}
 				</p>
+			</div>
+
+			<div>
+				<h3>save and load data</h3>
+
+				<p class="mt-2 flex flex-wrap items-baseline gap-1">
+					<Button on:click={exportToFile}>download file</Button>
+					<Button on:click={exportToClipboard}>
+						copy to clipboard
+					</Button>
+					{#if exportMessage}
+						<span class="ml-1" role="status">{exportMessage}</span>
+					{/if}
+				</p>
+
+				<div class="mt-1 flex">
+					<p>
+						<Button on:click={() => fileInput.click()}>
+							upload file
+						</Button>
+						<input
+							bind:this={fileInput}
+							type="file"
+							accept=".json,application/json,text/plain"
+							class="hidden"
+							on:change={importFromFile}
+						/>
+					</p>
+
+					<form
+						on:submit|preventDefault={importFromText}
+						class="flex-1 flex gap-1"
+					>
+						<TextInput
+							bind:value={importSettings}
+							placeholder="or paste copied settings..."
+							on:input={() => (importMessage = '')}
+						/>
+						<Button type="submit">submit</Button>
+					</form>
+				</div>
+
+				{#if importMessage}
+					<p class="mt-2" role="status">{importMessage}</p>
+				{/if}
 			</div>
 
 			<div>
@@ -519,35 +620,6 @@
 					</p>
 				</div>
 			{/if}
-
-			<div>
-				<h3>save and load data</h3>
-
-				<p class="mt-2 flex items-baseline gap-2">
-					<Button on:click={exportToClipboard}>
-						export to clipboard
-					</Button>
-					{#if exportMessage}
-						<span role="status">{exportMessage}</span>
-					{/if}
-				</p>
-
-				<form
-					on:submit|preventDefault={importFromText}
-					class="flex gap-1 mt-1"
-				>
-					<TextInput
-						bind:value={importSettings}
-						placeholder="import..."
-						on:input={() => (importMessage = '')}
-					/>
-					<Button type="submit">submit</Button>
-				</form>
-
-				{#if importMessage}
-					<p class="mt-2" role="status">{importMessage}</p>
-				{/if}
-			</div>
 
 			<p>Changes are automatically saved.</p>
 

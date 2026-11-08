@@ -10,10 +10,10 @@
 <button
 	{type}
 	aria-pressed={pressed}
-	class="px-2 py-0.5 border-2 border-current/10 transition-colors rounded-lg
+	class="px-2 py-0.5 border-2 transition-colors rounded-lg
 	{pressed
-		? 'bg-accent text-background'
-		: 'bg-control hover:text-accent focus:text-accent'} {className}"
+		? 'bg-accent/10 text-accent border-accent/50'
+		: 'bg-control border-current/10 hover:text-accent focus:text-accent'} {className}"
 	on:click
 >
 	<slot />

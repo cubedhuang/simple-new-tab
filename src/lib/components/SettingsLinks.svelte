@@ -2,6 +2,7 @@
 	import { flip } from 'svelte/animate';
 	import { columns, links, generateId } from '../stores.svelte';
 	import Button from './Button.svelte';
+	import Select from './Select.svelte';
 	import TextInput from './TextInput.svelte';
 	import ArrowDown from './icons/ArrowDown.svelte';
 	import ArrowUp from './icons/ArrowUp.svelte';
@@ -45,14 +46,11 @@
 	<h3>links</h3>
 
 	<p class="mt-1">
-		<Button
-			on:click={() => {
-				columns.value = (columns.value % 4) + 1;
-			}}
-		>
-			{columns.value}
-			{columns.value === 1 ? 'Column' : 'Columns'}
-		</Button>
+		<Select
+			label="Columns"
+			bind:value={columns.value}
+			options={[1, 2, 3, 4].map(n => ({ value: n, label: `${n}` }))}
+		/>
 	</p>
 
 	{#each links.value as section, sectionIndex (section.id)}
