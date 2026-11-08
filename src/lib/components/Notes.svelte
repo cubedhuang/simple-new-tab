@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { notes } from '../stores.svelte';
+	import { notes, notesTitle } from '../stores.svelte';
+
+	let { editing }: { editing: boolean } = $props();
 
 	let textarea: HTMLTextAreaElement;
 
@@ -22,9 +24,20 @@
 <svelte:window onresize={fit} />
 
 <div class="max-w-prose">
-	<h2 class="link-transition" style:--link-transition="notes-heading">
-		notes
-	</h2>
+	{#if editing}
+		<input
+			class="link-transition block w-full min-w-0 mb-1 px-2 py-0.5 bg-control border-2 border-current/10 rounded-lg transition-colors text-accent font-heading placeholder:text-body placeholder:opacity-50"
+			style:--link-transition="notes-heading"
+			type="text"
+			placeholder="notes title"
+			aria-label="notes title"
+			bind:value={notesTitle.value}
+		/>
+	{:else}
+		<h2 class="link-transition" style:--link-transition="notes-heading">
+			{notesTitle.value}
+		</h2>
+	{/if}
 
 	<textarea
 		bind:this={textarea}

@@ -25,7 +25,8 @@ export class Stored<T> {
 		this.value = initialValue;
 
 		globalEffect(() => {
-			storage.setItem(newKey, JSON.stringify(this.value));
+			const json = JSON.stringify(this.value);
+			if (storage.getItem(newKey) !== json) storage.setItem(newKey, json);
 		});
 
 		addEventListener('storage', event => {
@@ -33,7 +34,7 @@ export class Stored<T> {
 			if (event.key !== null && event.key !== newKey) return;
 
 			try {
-				this.value = JSON.parse(event.newValue ?? fallback);
+				this.value = JSON.parse(storage.getItem(newKey) ?? fallback);
 			} catch {}
 		});
 	}
@@ -403,3 +404,4 @@ export const units = new Stored<Units>('units', {
 });
 
 export const notes = new Stored('notes', '');
+export const notesTitle = new Stored('notes-title', 'notes');

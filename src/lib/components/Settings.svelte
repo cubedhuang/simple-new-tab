@@ -13,6 +13,7 @@
 		splitIntoColumns,
 		presetFonts,
 		notes,
+		notesTitle,
 		quoteTags,
 		tweaks,
 		units,
@@ -99,6 +100,7 @@
 			linkColumns: linkColumns.value,
 			quoteTags: quoteTags.value,
 			notes: notes.value,
+			notesTitle: notesTitle.value,
 			weatherLocation: weatherLocation.value,
 			units: units.value,
 			weatherLayout: weatherLayout.value,
@@ -194,6 +196,9 @@
 		}
 		if (data.quoteTags) quoteTags.value = data.quoteTags;
 		if (typeof data.notes === 'string') notes.value = data.notes;
+		if (typeof data.notesTitle === 'string') {
+			notesTitle.value = data.notesTitle;
+		}
 		if (data.weatherLocation?.mode) {
 			weatherLocation.value = data.weatherLocation;
 		} else if (data.weatherKey) {

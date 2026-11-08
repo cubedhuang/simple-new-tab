@@ -60,7 +60,7 @@
 		{/if}
 
 		{#if !tweaks.value.hideNotes}
-			<Notes />
+			<Notes editing={editingLinks} />
 		{/if}
 	</div>
 
