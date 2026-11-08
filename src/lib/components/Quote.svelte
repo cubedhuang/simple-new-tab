@@ -35,7 +35,7 @@
 
 {#await quote then quote}
 	<figure>
-		<blockquote class="max-w-prose">
+		<blockquote class="max-w-prose text-pretty">
 			{quote.content}
 		</blockquote>
 		<figcaption>
