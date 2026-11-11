@@ -43,9 +43,15 @@
 		bind:this={textarea}
 		bind:value={notes.value}
 		style:--link-transition="notes-text"
-		rows="2"
+		rows="1"
 		placeholder="notes..."
 		aria-label="notes"
-		class="link-transition block w-full contain-inline-size min-h-[calc(2lh+0.5rem+4px)] px-2 py-1 resize-none overflow-hidden field-sizing-content bg-control border-2 border-current/10 rounded-lg transition-colors placeholder:text-body placeholder:opacity-50
-		    focus:outline-none focus:border-accent/50"></textarea>
+		spellcheck="false"
+		class={[
+			`link-transition block contain-inline-size min-h-[calc(1lh+0.5rem+4px)] px-2 py-1 resize-none overflow-hidden field-sizing-content border-2 rounded-lg transition-colors
+			placeholder:text-body placeholder:opacity-50 focus:outline-none focus:bg-control focus:border-current/10`,
+			editing
+				? 'w-full bg-control border-current/10'
+				: '-mx-[calc(0.5rem+2px)] w-[calc(100%+1rem+4px)] border-transparent hover:bg-control hover:border-current/10'
+		]}></textarea>
 </div>
