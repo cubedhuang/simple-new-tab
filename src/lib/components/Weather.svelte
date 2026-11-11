@@ -71,7 +71,6 @@
 		86: 'snow showers',
 		95: 'thunderstorm',
 		96: 'thunderstorm with hail',
-		97: 'heavy thunderstorm',
 		99: 'thunderstorm with heavy hail'
 	};
 
