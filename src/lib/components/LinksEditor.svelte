@@ -539,6 +539,7 @@
 											type="text"
 											placeholder="todo"
 											aria-label="todo"
+											spellcheck="false"
 											data-focus-id={item.id}
 											bind:value={item.text}
 										/>

@@ -326,6 +326,7 @@
 												rows="1"
 												placeholder="todo"
 												aria-label="todo"
+												spellcheck="false"
 												bind:value={item.text}
 												{@attach textarea => {
 													textarea.focus();
@@ -377,6 +378,7 @@
 									class="min-w-0 w-full flex-1 bg-transparent placeholder:text-body placeholder:opacity-50 focus:outline-none focus:text-accent focus:placeholder:text-accent"
 									type="text"
 									placeholder="add..."
+									spellcheck="false"
 									aria-label="add to {section.title ||
 										'todo list'}"
 									data-add-todo={section.id}
