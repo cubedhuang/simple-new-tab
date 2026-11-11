@@ -2,28 +2,42 @@
 
 A minimalistic, configurable new tab page. Works with Chromium-based browsers and Firefox.
 
-- [Chrome Extension](https://chrome.google.com/webstore/detail/simple-new-tab/knjgndjhindbbphlfnaagilhcjciehaf)
-- [Firefox Add-on](https://addons.mozilla.org/en-US/firefox/addon/minimalistic-new-tab/)
+Install it from the [Chrome Web Store](https://chrome.google.com/webstore/detail/simple-new-tab/knjgndjhindbbphlfnaagilhcjciehaf) or [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/minimalistic-new-tab/).
 
-![Screenshot](docs/main.png)
+![The new tab page with a quote, links, a todo list, notes, the clock, weather, tab stats and Discord status](docs/main.png)
 
 ## Features
 
-- Minimalistic design.
-- Easy to configure.
-  ![Screenshot](docs/settings.png)
+- Customizable colors! Use a preset theme or craft your own.
 - Organize your links into sections and columns.
-  ![Screenshot](docs/links.png)
-- Use a preset theme or craft your own.
-  ![Screenshot](docs/colors.png)
+- Stay on top of your todos and notes.
 - A new quote every time you open a new tab.
 - Clock with the current local time.
-- Weather information in your area, powered by [Open-Meteo](https://open-meteo.com/) and [BigDataCloud](https://www.bigdatacloud.com/).
+- Weather information in your area or a city you choose, powered by [Open-Meteo](https://open-meteo.com/) and [BigDataCloud](https://www.bigdatacloud.com/).
 - Stats on how many tabs you've opened.
 - Your Discord status at a glance.
 - Show or hide anything you don't need.
 - Import and export your settings.
-  ![Screenshot](docs/import-export.png)
+
+See the [changelog](CHANGELOG.md) changes in recent versions.
+
+## Screenshots
+
+### Settings
+
+![The settings panel with tweaks, fonts, color themes and clock options](docs/settings.png)
+
+### Link editor
+
+![The link editor with draggable sections, links and todos in columns](docs/links.png)
+
+### Colors
+
+![The theme list and the OKLCH color picker](docs/colors.png)
+
+### Import and export
+
+![Weather, Discord, and save and load settings](docs/import-export.png)
 
 ## Build
 
