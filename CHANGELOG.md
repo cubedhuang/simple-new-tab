@@ -2,6 +2,8 @@
 
 ## 1.7
 
+Released November 11, 2026.
+
 ### Added
 
 - You can add todo lists next to your link sections. Type to create a todo. Click a todo to edit it. Drag a todo to move it. You can remove the completed todos, and you can undo this removal.
