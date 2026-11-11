@@ -19,7 +19,7 @@ Install it from the [Chrome Web Store](https://chrome.google.com/webstore/detail
 - Show or hide anything you don't need.
 - Import and export your settings.
 
-See the [changelog](CHANGELOG.md) changes in recent versions.
+See the [changelog](CHANGELOG.md) for changes in recent versions.
 
 ## Screenshots
 
