@@ -460,7 +460,7 @@
 						href="https://github.com/phineas/Lanyard"
 						class="underline underline-offset-2 hover:text-accent transition-colors"
 					>
-						Github page</a
+						GitHub page</a
 					>.
 				</p>
 
