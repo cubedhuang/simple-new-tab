@@ -45,13 +45,19 @@ $effect.root(() => {
 			}
 		}
 
-		update();
+		function updateIfVisible() {
+			if (!document.hidden) update();
+		}
 
-		const interval = setInterval(update, 5000);
+		updateIfVisible();
+
+		const interval = setInterval(updateIfVisible, 5000);
+		document.addEventListener('visibilitychange', updateIfVisible);
 
 		return () => {
 			stale = true;
 			clearInterval(interval);
+			document.removeEventListener('visibilitychange', updateIfVisible);
 		};
 	});
 });
