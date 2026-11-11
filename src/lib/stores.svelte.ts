@@ -113,13 +113,14 @@ globalEffect(() => {
 
 	setFavicon(colors.value);
 
-	// light background have less darkening than dark backgrounds
 	const background = parseColor(colors.value.background ?? '');
-	document.documentElement.style.setProperty(
+	const light = !!background && background.l > 0.7;
+
+	root.style.colorScheme = light ? 'light' : 'dark';
+	// light backgrounds have less darkening than dark backgrounds
+	root.style.setProperty(
 		'--control',
-		background && background.l > 0.7
-			? 'rgb(0 0 0 / 0.08)'
-			: 'rgb(0 0 0 / 0.3)'
+		light ? 'rgb(0 0 0 / 0.08)' : 'rgb(0 0 0 / 0.3)'
 	);
 });
 
@@ -285,50 +286,37 @@ export function splitIntoColumns(
 	return columns;
 }
 
-const defaultSections: LinkSection[] = [
-	{
+function defaultLinks(title: string, links: Record<string, string>): Section {
+	return {
 		id: generateId(),
-		title: 'simple',
-		children: [
-			{
-				id: generateId(),
-				name: 'google',
-				url: 'https://google.com'
-			},
-			{
-				id: generateId(),
-				name: 'docs',
-				url: 'https://docs.google.com'
-			},
-			{
-				id: generateId(),
-				name: 'gmail',
-				url: 'https://gmail.com'
-			},
-			{
-				id: generateId(),
-				name: 'github',
-				url: 'https://github.com'
-			}
-		]
-	},
-	{
-		id: generateId(),
-		title: 'links',
-		children: [
-			{
-				id: generateId(),
-				name: 'youtube',
-				url: 'https://youtube.com'
-			},
-			{
-				id: generateId(),
-				name: 'twitter',
-				url: 'https://twitter.com'
-			}
-		]
-	}
-];
+		title,
+		children: Object.entries(links).map(([name, url]) => ({
+			id: generateId(),
+			name,
+			url
+		}))
+	};
+}
+
+const defaultColumns: LinkColumn[] = [
+	[
+		defaultLinks('daily', {
+			gmail: 'https://mail.google.com',
+			calendar: 'https://calendar.google.com',
+			drive: 'https://drive.google.com',
+			maps: 'https://maps.google.com'
+		})
+	],
+	[
+		defaultLinks('browse', {
+			youtube: 'https://youtube.com',
+			reddit: 'https://reddit.com',
+			wikipedia: 'https://wikipedia.org',
+			github: 'https://github.com'
+		})
+	],
+	[{ kind: 'todo' as const, id: generateId(), title: 'todo', children: [] }]
+].map(sections => ({ id: generateId(), sections }));
 
 // older versions just had a list of links and column count
 const legacyLinks = Stored.takeLegacy('links');
@@ -336,10 +324,12 @@ const legacyColumns = Stored.takeLegacy('columns');
 
 export const linkColumns = new Stored<LinkColumn[]>(
 	'link-columns',
-	splitIntoColumns(
-		Array.isArray(legacyLinks) ? legacyLinks : defaultSections,
-		typeof legacyColumns === 'number' ? legacyColumns : 1
-	)
+	Array.isArray(legacyLinks)
+		? splitIntoColumns(
+				legacyLinks,
+				typeof legacyColumns === 'number' ? legacyColumns : 1
+			)
+		: defaultColumns
 );
 
 export const defaultQuoteTags = [
